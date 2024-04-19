@@ -5,11 +5,11 @@ import Login from "./pages/login/Login";
 
 function App() {
   return (
-    <div>
-      {/* <Home /> */}
+    <>
+      <Home />
       {/* <Signup /> */}
-      <Login />
-    </div>
+      {/* <Login /> */}
+    </>
   );
 }
 
