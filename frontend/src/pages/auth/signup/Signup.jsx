@@ -4,17 +4,26 @@ import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import signupImage from "../../../assets/images/register.jpg";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { TbEye } from "react-icons/tb";
 
 function Signup() {
   const [message, setMessage] = useState(null);
+  const [error, setError] = useState(null);
+  const [passVisible, setPassVisible] = useState(false);
+  const [confirmPassVisible, setConfirmPassVisible] = useState(false);
+
   //   SUBMIT FUNCTION
   const onSubmit = async (values, actions) => {
     try {
-      const BASE_URL = "http://localhost:4000";
-      const res = await axios.post(`${BASE_URL}/auth/signup`, values);
+      const url = "http://localhost:4000/api/auth/signup";
+      const res = await axios.post(url, values);
       actions.resetForm();
-      setMessage(res.msg);
+      setMessage("Verify your email address before login");
+      setError(null);
     } catch (error) {
+      setError("Failed, try with different data");
+      setMessage(null);
       console.log(error);
     }
   };
@@ -55,7 +64,6 @@ function Signup() {
       fullname: "",
       username: "",
       email: "",
-      avatarURL: "",
       password: "",
       confirmPassword: "",
     },
@@ -123,43 +131,62 @@ function Signup() {
               )}
             </div>
             {/* SINGLE INPUT */}
-            <div className="auth__form-container_fields-content_input">
+            <div className="auth__form-container_fields-content_input relative pass-input ">
               <label htmlFor="password">Password</label>
-              <input
-                className={
-                  errors.password && touched.password ? "input-error" : ""
-                }
-                name="password"
-                type="password"
-                placeholder="Password"
-                value={values.password}
-                onBlur={handleBlur}
-                onChange={handleChange}
-              />
+              <div className="relative w-full">
+                <input
+                  className={
+                    errors.password && touched.password ? "input-error" : ""
+                  }
+                  name="password"
+                  style={{ width: "100%" }}
+                  type={passVisible ? "text" : "password"}
+                  placeholder="Password"
+                  value={values.password}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                />
+                <span
+                  className="inline absolute right-2 bottom-3"
+                  onClick={() => setPassVisible((prev) => !prev)}
+                >
+                  {passVisible ? <TbEye /> : <FaRegEyeSlash />}
+                </span>
+              </div>
               {errors.password && touched.password && (
                 <p className="error"> {errors.password}</p>
               )}
             </div>
             {/* SINGLE INPUT */}
-            <div className="auth__form-container_fields-content_input">
+            <div className="auth__form-container_fields-content_input pass-input">
               <label htmlFor="confirmPassword">Confirm Password</label>
-              <input
-                className={
-                  errors.confirmPassword && touched.confirmPassword
-                    ? "input-error"
-                    : ""
-                }
-                name="confirmPassword"
-                type="password"
-                placeholder="Confirm Password"
-                value={values.confirmPassword}
-                onBlur={handleBlur}
-                onChange={handleChange}
-              />
+              <div className="relative w-full">
+                <input
+                  className={
+                    errors.confirmPassword && touched.confirmPassword
+                      ? "input-error"
+                      : ""
+                  }
+                  style={{ width: "100%" }}
+                  name="confirmPassword"
+                  type={confirmPassVisible ? "text" : "password"}
+                  placeholder="Confirm Password"
+                  value={values.confirmPassword}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                />
+                <span
+                  className="inline absolute right-2 bottom-3"
+                  onClick={() => setConfirmPassVisible((prev) => !prev)}
+                >
+                  {confirmPassVisible ? <TbEye /> : <FaRegEyeSlash />}
+                </span>
+              </div>
               {errors.confirmPassword && touched.confirmPassword && (
                 <p className="error"> {errors.confirmPassword}</p>
               )}
-              {message && <p className="success">{message}</p>}
+              {message && <p className="success-msg msg">{message}</p>}
+              {error && <p className="fail-msg msg">{error}</p>}
             </div>
             {/* BUTTONS */}
             <div className="auth__form-container_fields-content_button">

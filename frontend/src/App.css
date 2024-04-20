@@ -1716,6 +1716,19 @@ input.input-error {
   font-size: 14px;
   color: #fc8181;
 }
+.pass-input {
+  width: 86%;
+}
+.msg {
+  margin: 0.4rem 0;
+  text-align: center;
+}
+.success-msg {
+  color: #3bb19b;
+}
+.fail-msg {
+  color: #fc8181;
+}
 .invalid_us_pas,
 .success {
   text-align: center;

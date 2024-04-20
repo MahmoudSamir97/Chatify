@@ -3,9 +3,12 @@ import { useFormik } from "formik";
 import signinImage from "../../../assets/images/register.jpg";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { TbEye } from "react-icons/tb";
 
 function Signin() {
   const [error, setError] = useState(null);
+  const [passVisible, setPassVisible] = useState(false);
 
   //   SUBMIT FUNCTION
   const onSubmit = async (values, actions) => {
@@ -49,15 +52,24 @@ function Signin() {
               />
             </div>
             {/* SINGLE INPUT */}
-            <div className="auth__form-container_fields-content_input">
+            <div className="auth__form-container_fields-content_input pass-input">
               <label htmlFor="password">Password</label>
-              <input
-                name="password"
-                type="password"
-                placeholder="Password"
-                value={values.password}
-                onChange={handleChange}
-              />
+              <div className="relative w-full">
+                <input
+                  name="password"
+                  type={passVisible ? "text" : "password"}
+                  style={{ width: "100%" }}
+                  placeholder="Password"
+                  value={values.password}
+                  onChange={handleChange}
+                />
+                <span
+                  className="inline absolute right-2 bottom-3"
+                  onClick={() => setPassVisible((prev) => !prev)}
+                >
+                  {passVisible ? <TbEye /> : <FaRegEyeSlash />}
+                </span>
+              </div>
               {error && <p className="invalid_us_pas">{error}</p>}
             </div>
             <div className="auth__form-container_fields-content_button">
