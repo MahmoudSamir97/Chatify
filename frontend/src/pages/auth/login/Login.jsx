@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
-import signinImage from "../../assets/images/register.jpg";
+import signinImage from "../../../assets/images/register.jpg";
 import axios from "axios";
 import { Link } from "react-router-dom";
 

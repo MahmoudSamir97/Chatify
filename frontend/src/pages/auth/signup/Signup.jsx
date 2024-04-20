@@ -1,32 +1,36 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
-import signupImage from "../../assets/images/register.jpg";
+import signupImage from "../../../assets/images/register.jpg";
 
 function Signup() {
+  const [message, setMessage] = useState(null);
   //   SUBMIT FUNCTION
   const onSubmit = async (values, actions) => {
     try {
       const BASE_URL = "http://localhost:4000";
-      const {
-        data: { token, userID, password },
-      } = await axios.post(`${BASE_URL}/auth/signup`, values);
+      const res = await axios.post(`${BASE_URL}/auth/signup`, values);
       actions.resetForm();
+      setMessage(res.msg);
     } catch (error) {
       console.log(error);
     }
   };
   // VALIDATION SCHEMA
   const passwordPattern = new RegExp(/^[A-Z][A-Za-z1-9]{5,}[@#$%^&*]{1,}$/);
+  const usernamePattern = new RegExp(/^[A-Za-z]{8,}[0-9@#$%^&*]{2,}$/);
   const signupSchema = Yup.object({
-    fullname: Yup.string().required("Required"),
-    username: Yup.string().required("Required"),
+    fullname: Yup.string()
+      .min(8, "full name can't be less than 8 characters")
+      .required("Required"),
+    username: Yup.string()
+      .matches(usernamePattern, "Username must be unique")
+      .required("Required"),
     email: Yup.string()
       .email("Please enter a valid email address.")
       .required("Required"),
-    avatarURL: Yup.string().required("Required"),
     password: Yup.string()
       .matches(
         passwordPattern,
@@ -155,6 +159,7 @@ function Signup() {
               {errors.confirmPassword && touched.confirmPassword && (
                 <p className="error"> {errors.confirmPassword}</p>
               )}
+              {message && <p className="success">{message}</p>}
             </div>
             {/* BUTTONS */}
             <div className="auth__form-container_fields-content_button">

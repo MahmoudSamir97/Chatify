@@ -1716,12 +1716,17 @@ input.input-error {
   font-size: 14px;
   color: #fc8181;
 }
-.invalid_us_pas {
+.invalid_us_pas,
+.success {
   text-align: center;
   margin-bottom: 0;
   padding-bottom: 0;
   font-size: 1rem;
-  color: #fc8181;
+}
+.invalid_us_pas {
+  color: #5cdd5c;
+}
+.success {
 }
 button:disabled {
   opacity: 0.35;
