@@ -2,7 +2,7 @@ const { Schema, model } = require('mongoose');
 
 const userSchema = new Schema(
   {
-    fullName: {
+    fullname: {
       type: String,
       required: true,
     },
@@ -11,19 +11,24 @@ const userSchema = new Schema(
       required: true,
       unique: true,
     },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+    },
     password: {
       type: String,
       required: true,
-      minlength: 6,
-    },
-    gender: {
-      type: String,
-      required: true,
-      enum: ['male', 'female'],
+      minlength: 8,
+      select: false,
     },
     profilePic: {
       type: String,
       default: '',
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
     },
     // createdAt, updatedAt => Member since <createdAt>
   },
