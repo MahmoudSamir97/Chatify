@@ -2,33 +2,42 @@ import React, { useState } from "react";
 import { useFormik } from "formik";
 import signinImage from "../../../assets/images/register.jpg";
 import axios from "axios";
-import { Link } from "react-router-dom";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { FaRegEyeSlash } from "react-icons/fa";
 import { TbEye } from "react-icons/tb";
+import toast from "react-hot-toast";
+import { useAuthContext } from "../../../context/AuthContext";
 
 function Signin() {
-  const [error, setError] = useState(null);
   const [passVisible, setPassVisible] = useState(false);
+  const { setAuthUser } = useAuthContext();
+  const navigate = useNavigate();
 
   //   SUBMIT FUNCTION
   const onSubmit = async (values, actions) => {
     try {
-      const BASE_URL = "http://localhost:4000";
-      const {
-        data: { token, userID, username, fullname },
-      } = await axios.post(`${BASE_URL}/auth/signin`, values);
-      setError(null);
+      const url = "http://localhost:4000/api/auth/login";
+      const { data } = await axios.post(url, values);
+      // local storage
+      localStorage.setItem("chat-user", JSON.stringify(data.user));
+      setAuthUser(data.user);
       actions.resetForm();
+      navigate("/");
     } catch (error) {
-      setError("Invalid username or password");
-      console.log(error);
+      const errorMessage = error.response.data.message;
+      if (errorMessage) {
+        toast.error(errorMessage);
+      } else {
+        // generic error message
+        toast.error("Error occurred, try with different data");
+      }
     }
   };
 
   // FORMIK
   const { values, isSubmitting, handleChange, handleSubmit } = useFormik({
     initialValues: {
-      username: "",
+      email: "",
       password: "",
     },
     onSubmit,
@@ -42,12 +51,12 @@ function Signin() {
           <form onSubmit={handleSubmit}>
             {/* SINGLE INPUT */}
             <div className="auth__form-container_fields-content_input">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="username">Email</label>
               <input
-                name="username"
-                type="text"
-                placeholder="Username"
-                value={values.username}
+                name="email"
+                type="email"
+                placeholder="Email"
+                value={values.email}
                 onChange={handleChange}
               />
             </div>
@@ -70,7 +79,12 @@ function Signin() {
                   {passVisible ? <TbEye /> : <FaRegEyeSlash />}
                 </span>
               </div>
-              {error && <p className="invalid_us_pas">{error}</p>}
+              <Link
+                className="text-blue-700 text-sm inline hover:text-blue-400"
+                to={"/forget-password"}
+              >
+                Forget your password?
+              </Link>
             </div>
             <div className="auth__form-container_fields-content_button">
               <button disabled={isSubmitting} type="submit">

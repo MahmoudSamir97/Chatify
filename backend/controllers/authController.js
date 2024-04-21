@@ -10,7 +10,6 @@ const AppError = require('../utils/AppError');
 
 exports.signup = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
-
   // SEND FAIL IF USER EXIST
   const foundedUser = await User.findOne({ email });
   if (foundedUser) {
@@ -29,12 +28,8 @@ exports.signup = catchAsync(async (req, res, next) => {
   });
   const url = `${process.env.BASE_URL}/user/${user._id}/verify/${token}`;
   sendeEmail(user.email, 'Verify email', verifyTemplate, url, user.username);
-
-  // Generate JWT token here
-  // generateTokenAndSetCookie(user._id, res);
-
   res.status(201).json({
-    user,
+    message: 'Please verify your email address',
   });
 });
 
@@ -57,10 +52,7 @@ exports.login = catchAsync(async (req, res, next) => {
   // 4-) send token
   generateTokenAndSetCookie(user._id, res);
   res.status(200).json({
-    _id: user._id,
-    fullName: user.fullname,
-    username: user.username,
-    profilePic: user.profilePic,
+    user,
   });
 });
 

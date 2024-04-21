@@ -2,19 +2,33 @@ import "./App.css";
 import Home from "./pages/home/Home";
 import Signup from "./pages/auth/signup/Signup";
 import Login from "./pages/auth/login/Login";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import Setting from "./pages/setting/Setting";
 import EmailVerify from "./pages/auth/verify/EmailVerify";
+import ForgetPassword from "./pages/auth/forgetPassword/ForgetPassword";
+import { useAuthContext } from "./context/AuthContext";
 
 function App() {
+  const { authUser } = useAuthContext();
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/signup" element={<Signup />} />
-      <Route path="/setting" element={<Setting />} />
-      <Route path="/user/:id/verify/:token" element={<EmailVerify />} />
-    </Routes>
+    <>
+      <Routes>
+        <Route
+          path="/"
+          element={authUser ? <Home /> : <Navigate to={"/Login"} />}
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/forget-password" element={<ForgetPassword />} />
+        <Route
+          path="/setting"
+          element={authUser ? <Setting /> : <Navigate to={"/Login"} />}
+        />
+        <Route path="/user/:id/verify/:token" element={<EmailVerify />} />
+      </Routes>
+      <Toaster />
+    </>
   );
 }
 

@@ -4,12 +4,11 @@ import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 import * as Yup from "yup";
 import signupImage from "../../../assets/images/register.jpg";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
+import { FaRegEyeSlash } from "react-icons/fa";
 import { TbEye } from "react-icons/tb";
+import toast from "react-hot-toast";
 
 function Signup() {
-  const [message, setMessage] = useState(null);
-  const [error, setError] = useState(null);
   const [passVisible, setPassVisible] = useState(false);
   const [confirmPassVisible, setConfirmPassVisible] = useState(false);
 
@@ -17,14 +16,20 @@ function Signup() {
   const onSubmit = async (values, actions) => {
     try {
       const url = "http://localhost:4000/api/auth/signup";
-      const res = await axios.post(url, values);
+      const data = await axios.post(url, values);
+      console.log(data);
       actions.resetForm();
-      setMessage("Verify your email address before login");
-      setError(null);
+
+      toast.success("Please verify your email address");
     } catch (error) {
-      setError("Failed, try with different data");
-      setMessage(null);
-      console.log(error);
+      const errorMessage = error.response.data.message;
+      if (errorMessage) {
+        toast.error(errorMessage);
+      } else {
+        // generic error message
+        console.log(error);
+        toast.error("Error occured, try with different data");
+      }
     }
   };
   // VALIDATION SCHEMA
@@ -185,8 +190,6 @@ function Signup() {
               {errors.confirmPassword && touched.confirmPassword && (
                 <p className="error"> {errors.confirmPassword}</p>
               )}
-              {message && <p className="success-msg msg">{message}</p>}
-              {error && <p className="fail-msg msg">{error}</p>}
             </div>
             {/* BUTTONS */}
             <div className="auth__form-container_fields-content_button">

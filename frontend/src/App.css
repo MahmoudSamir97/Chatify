@@ -1724,7 +1724,8 @@ input.input-error {
   text-align: center;
 }
 .success-msg {
-  color: #3bb19b;
+  color: #39aa96;
+  font-weight: 600;
 }
 .fail-msg {
   color: #fc8181;
