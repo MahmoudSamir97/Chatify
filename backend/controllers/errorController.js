@@ -6,11 +6,12 @@ const handleCastErrorFromDB = (err) => {
 };
 
 const handleDuplicateFieldsFromDB = (err) => {
-  const keyValueString = JSON.stringify(err.keyValue);
-  const message = `Duplicate field value ${keyValueString}, please use another value`;
+  const fieldname = Object.keys(err.keyValue)[0];
+  const message = `Duplicate ${fieldname} value, please choose unique value`;
   return new AppError(400, message);
 };
 const handleValidationsErrorFromDB = (err) => {
+  console.log(err);
   const errors = Object.values(err.errors).map((item) => item.message);
   const message = `Invalid input data. ${errors.join(' .')}`;
   return new AppError(400, message);
@@ -33,29 +34,31 @@ const sendErrorProd = (res, err) => {
       message: err.message,
     });
   }
-  // unexpected error , from unkonwn resource. dont send error details to client!
+  // unexpected error , from unkonwn resource. dont send error details to user!
   else {
-    // 1-)log error
     console.error('😁', err);
-    // 2-)send response
     res.status(500).json({
       status: 'error',
       message: 'something went wrong!',
     });
   }
 };
-
+// START
 exports.globaleErrorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(res, err);
-  } else if (process.env.NODE_ENV === 'production') {
-    let error = { ...err };
-    if (error.kind === 'ObjectId') error = handleCastErrorFromDB(error);
-    if (error.code === 11000) error = handleDuplicateFieldsFromDB(error);
-    if (error.name === 'ValidationError')
-      error = handleValidationsErrorFromDB(error);
-    sendErrorProd(res, error);
+  }
+  if (process.env.NODE_ENV === 'production') {
+    if (err.kind === 'ObjectId') {
+      sendErrorProd(res, handleCastErrorFromDB(err));
+    } else if (err.code === 11000) {
+      sendErrorProd(res, handleDuplicateFieldsFromDB(err));
+    } else if (err.name === 'ValidationError') {
+      sendErrorProd(res, handleValidationsErrorFromDB(err));
+    } else {
+      sendErrorProd(res, new AppError(err.statusCode, err.message));
+    }
   }
 };
