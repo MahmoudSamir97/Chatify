@@ -1,5 +1,7 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
+
 const User = require('../models/userModel');
 const generateTokenAndSetCookie = require('../utils/generateToken');
 const { catchAsync } = require('../utils/catchAsync');
@@ -50,9 +52,14 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError(401, 'Invalid email or password'));
 
   // 4-) send token
-  generateTokenAndSetCookie(user._id, res);
+  // generateTokenAndSetCookie(user._id, res);
+  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.COOKIE_EXPIRES,
+  });
+
   res.status(200).json({
     user,
+    token,
   });
 });
 
