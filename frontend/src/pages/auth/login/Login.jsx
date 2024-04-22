@@ -20,12 +20,14 @@ function Signin() {
       const { data } = await axios.post(url, values);
       // local storage
       localStorage.setItem("chat-user", JSON.stringify(data.user));
+      localStorage.setItem("token", JSON.stringify(data.token));
       setAuthUser(data.user);
       actions.resetForm();
       navigate("/");
     } catch (error) {
       const errorMessage = error.response.data.message;
       if (errorMessage) {
+        console.log(error.response.data);
         toast.error(errorMessage);
       } else {
         // generic error message
