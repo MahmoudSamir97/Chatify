@@ -1740,7 +1740,9 @@ input.input-error {
 .invalid_us_pas {
   color: #5cdd5c;
 }
-.success {
+.msg-input {
+  padding: 9px 35px;
+  overflow-y: auto;
 }
 button:disabled {
   opacity: 0.35;
