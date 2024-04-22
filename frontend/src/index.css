@@ -9,7 +9,7 @@
 
 /* Style the scrollbar thumb */
 ::-webkit-scrollbar-thumb {
-  background-color: #9ca3af; /* Set the color of the scrollbar thumb */
+  background-color: #4f5153; /* Set the color of the scrollbar thumb */
   border-radius: 10px; /* Set the border radius to make it round */
 }
 
