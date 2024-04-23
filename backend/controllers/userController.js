@@ -21,7 +21,6 @@ exports.verifyEmail = catchAsync(async (req, res, next) => {
   });
 });
 exports.getUsersForSidebar = catchAsync(async (req, res, next) => {
-  console.log('hello');
   const loggedInUserId = req.user._id;
 
   const filteredUsers = await User.find({
