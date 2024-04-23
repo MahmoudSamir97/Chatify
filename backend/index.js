@@ -5,10 +5,10 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const authRouter = require('./routes/auth.routes');
 const userRouter = require('./routes/user.routes');
-const AppError = require('./utils/AppError');
 const { globaleErrorHandler } = require('./controllers/errorController');
 const messageRouter = require('./routes/message.Routes');
 const connectToMongoDB = require('./config/DBconfig');
+const AppError = require('./utils/error-handlers/AppError');
 
 // GLOBAL MIDDLEWARES
 app.use(

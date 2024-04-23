@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useFormik } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 import signupImage from "../../../assets/images/register.jpg";
 import { FaRegEyeSlash } from "react-icons/fa";
@@ -11,16 +11,17 @@ import toast from "react-hot-toast";
 function Signup() {
   const [passVisible, setPassVisible] = useState(false);
   const [confirmPassVisible, setConfirmPassVisible] = useState(false);
+  const navigate = useNavigate();
 
   //   SUBMIT FUNCTION
   const onSubmit = async (values, actions) => {
     try {
       const url = "http://localhost:4000/api/auth/signup";
       const data = await axios.post(url, values);
-      console.log(data);
+      if (data.error) throw new Error(data.error);
       actions.resetForm();
-
       toast.success("Please verify your email address");
+      setTimeout(() => navigate("/login"), 2200);
     } catch (error) {
       const errorMessage = error.response.data.message;
       if (errorMessage) {
@@ -34,7 +35,7 @@ function Signup() {
   };
   // VALIDATION SCHEMA
   const passwordPattern = new RegExp(/^[A-Z][A-Za-z1-9]{5,}[@#$%^&*]{1,}$/);
-  const usernamePattern = new RegExp(/^[A-Za-z]{8,}[0-9@#$%^&*]{2,}$/);
+  const usernamePattern = new RegExp(/^[A-Za-z]{6,}[0-9@#$%^&*]{1,}$/);
   const signupSchema = Yup.object({
     fullname: Yup.string()
       .min(8, "full name can't be less than 8 characters")
@@ -48,7 +49,7 @@ function Signup() {
     password: Yup.string()
       .matches(
         passwordPattern,
-        "Password must have Uppercase letter and special character"
+        "Password must start with Uppercase letter and includes special character"
       )
       .required("Required"),
     confirmPassword: Yup.string()

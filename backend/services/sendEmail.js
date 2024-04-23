@@ -1,5 +1,5 @@
 const nodemailer = require('nodemailer');
-const sendeEmail = async (email, subject, templateUsed, url, userName) => {
+const sendeEmail = async (user, subject, templateUsed, url) => {
   try {
     const transporter = nodemailer.createTransport({
       host: process.env.HOST,
@@ -15,9 +15,9 @@ const sendeEmail = async (email, subject, templateUsed, url, userName) => {
     // send mail with defined transport object
     await transporter.sendMail({
       from: process.env.USER, // sender address
-      to: email,
+      to: user.email,
       subject,
-      html: templateUsed(url, userName),
+      html: templateUsed(url, user.username),
     });
   } catch (error) {
     console.log(error);

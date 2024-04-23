@@ -1,7 +1,7 @@
 const Token = require('../models/tokenModel');
 const User = require('../models/userModel');
-const AppError = require('../utils/AppError');
-const { catchAsync } = require('../utils/catchAsync');
+const AppError = require('../utils/error-handlers/AppError');
+const { catchAsync } = require('../utils/error-handlers/catchAsync');
 
 exports.verifyEmail = catchAsync(async (req, res, next) => {
   // 1- if user exists

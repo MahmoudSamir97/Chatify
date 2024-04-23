@@ -18,13 +18,8 @@ function useSendMessages() {
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-      // TOKEN CONFIG (localstorage)
       const res = await axios.post(url, { message }, config);
       if (res.error) throw new Error(res.error);
-      // socket.emit("sendMessage", {
-      //   conversationId: selectedConversation?._id,
-      //   message,
-      // });
       setMessages([...messages, res.data]);
     } catch (error) {
       console.log(error);

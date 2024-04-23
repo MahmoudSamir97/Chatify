@@ -41,7 +41,6 @@ function MessageInput() {
 
   // EMOJI HANDLERS
   const onEmojiClick = (emojiObject, event) => {
-    event.preventDefault();
     if (!showEmoji) return; // Prevent appending emoji when emoji picker is hidden
     setMessage(message + emojiObject.emoji);
   };

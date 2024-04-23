@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel.js');
-const { catchAsync } = require('../utils/catchAsync.js');
-const AppError = require('../utils/AppError.js');
+const { catchAsync } = require('../utils/error-handlers/catchAsync.js');
+const AppError = require('../utils/error-handlers/AppError.js');
 
 const protectRoute = catchAsync(async (req, res, next) => {
   let token;

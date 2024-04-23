@@ -1,7 +1,7 @@
 const Conversation = require('../models/conversationModel');
 const Message = require('../models/messageModel');
 const { getReceiverSocketId, io } = require('../socket/socketManager');
-const { catchAsync } = require('../utils/catchAsync');
+const { catchAsync } = require('../utils/error-handlers/catchAsync');
 
 exports.sendMessage = catchAsync(async (req, res, next) => {
   const { message } = req.body;

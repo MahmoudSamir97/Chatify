@@ -8,6 +8,7 @@ import Setting from "./pages/setting/Setting";
 import EmailVerify from "./pages/auth/verify/EmailVerify";
 import ForgetPassword from "./pages/auth/forgetPassword/ForgetPassword";
 import { useAuthContext } from "./context/AuthContext";
+import ResetPassword from "./pages/auth/resetPassword/ResetPassword";
 
 function App() {
   const { authUser } = useAuthContext();
@@ -26,6 +27,10 @@ function App() {
           element={authUser ? <Setting /> : <Navigate to={"/Login"} />}
         />
         <Route path="/user/:id/verify/:token" element={<EmailVerify />} />
+        <Route
+          path="/auth/reset-password/:id/:token"
+          element={<ResetPassword />}
+        />
       </Routes>
       <Toaster />
     </>

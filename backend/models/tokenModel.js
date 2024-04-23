@@ -4,7 +4,6 @@ const tokenSchema = new Schema({
   userId: {
     type: Types.ObjectId,
     ref: 'User',
-    unique: true,
     required: true,
   },
   token: {
@@ -13,11 +12,16 @@ const tokenSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now(),
-    // 1 Hour
-    expires: 3600,
+    default: Date.now,
   },
 });
+
+tokenSchema.methods.hasExpired = function () {
+  const now = Date.now();
+  const isExpired =
+    now - this.createdAt.getTime() > 10 * 60 * 1000; /* 10 minutes */
+  return isExpired;
+};
 
 const Token = model('Token', tokenSchema);
 
