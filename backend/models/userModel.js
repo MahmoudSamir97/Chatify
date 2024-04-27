@@ -16,15 +16,29 @@ const userSchema = new Schema(
       required: true,
       unique: true,
     },
+    phoneNumber: {
+      type: String,
+      unique: true,
+    },
+    bio: {
+      type: String,
+      default: '',
+    },
     password: {
       type: String,
       required: true,
       minlength: 8,
       select: false,
     },
-    profilePic: {
-      type: String,
-      default: '',
+    profileImage: {
+      secure_url: {
+        type: String,
+        default: '',
+      },
+      public_id: {
+        type: String,
+        default: '',
+      },
     },
     isVerified: {
       type: Boolean,

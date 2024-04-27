@@ -1,25 +1,10 @@
-const Token = require('../models/tokenModel');
 const User = require('../models/userModel');
+const imageDataURI = require('image-data-uri');
+const { uploadImage, destroy } = require('../services/cloudinary');
 const AppError = require('../utils/error-handlers/AppError');
 const { catchAsync } = require('../utils/error-handlers/catchAsync');
+const { compressImage } = require('../utils/compressImage');
 
-exports.verifyEmail = catchAsync(async (req, res, next) => {
-  // 1- if user exists
-  const user = await User.findById(req.params.id);
-  if (!user) return next(new AppError(401, 'Invalid link'));
-  // 2- if token valid
-  const token = await Token.findOne({
-    userId: user._id,
-    token: req.params.token,
-  });
-  if (!token) return next(new AppError(401, 'User not found'));
-  // 3-verify
-  user.isVerified = true;
-  await user.save();
-  res.status(200).json({
-    message: 'Email verified successfully',
-  });
-});
 exports.getUsersForSidebar = catchAsync(async (req, res, next) => {
   const loggedInUserId = req.user._id;
 
@@ -28,4 +13,78 @@ exports.getUsersForSidebar = catchAsync(async (req, res, next) => {
   }).select('-password');
 
   res.status(200).json(filteredUsers);
+});
+
+exports.getSearchedUsers = catchAsync(async (req, res, next) => {
+  const { search } = req.query;
+  const { user } = req;
+
+  const keyword = search
+    ? {
+        $or: [
+          { username: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } },
+        ],
+      }
+    : {};
+
+  const users = await User.find(keyword).find({ _id: { $ne: user?._id } });
+
+  res.status(200).json(users);
+});
+
+exports.showProfile = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user._id);
+
+  await user.save();
+});
+
+exports.updateProfile = catchAsync(async (req, res, next) => {
+  const updatedUser = await User.findByIdAndUpdate(
+    req.user._id,
+    { ...req.body },
+    { runValidators: true, new: true }
+  );
+
+  res.status(200).json({
+    status: 'success',
+    message: 'data updated successfully',
+    updatedUser,
+  });
+});
+
+exports.addProfileImage = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user._id);
+  if (!req.file) next(new AppError(400, 'Profile picture not provided!'));
+
+  const compressedImageBuffer = await compressImage(req.file.buffer);
+
+  const mediaType = req.file.mimetype.split('/')[1].toUpperCase();
+  const dataURI = imageDataURI.encode(compressedImageBuffer, mediaType);
+
+  const { secure_url, public_id } = await uploadImage(dataURI);
+
+  user.profileImage.secure_url = secure_url;
+  user.profileImage.public_id = public_id;
+  await user.save();
+
+  res.status(201).json({
+    status: 'success',
+    message: 'Image added successfully',
+    user,
+  });
+});
+
+exports.removeProfileImage = catchAsync(async (req, res, next) => {
+  const user = await User.findByIdAndUpdate(req.user._id, {
+    profileImage: { secure_url: '', public_id: '' },
+  });
+
+  const result = await destroy(user.profileImage.public_id);
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Image deleted successfully',
+    result,
+  });
 });

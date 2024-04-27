@@ -9,6 +9,7 @@ const { globaleErrorHandler } = require('./controllers/errorController');
 const messageRouter = require('./routes/message.Routes');
 const connectToMongoDB = require('./config/DBconfig');
 const AppError = require('./utils/error-handlers/AppError');
+const chatRouter = require('./routes/chat.routes');
 
 // GLOBAL MIDDLEWARES
 app.use(
@@ -23,6 +24,7 @@ app.use(cookieParser());
 // ROUTES
 app.use('/api/auth', authRouter);
 app.use('/api/message', messageRouter);
+app.use('/api/chat', chatRouter);
 app.use('/api/user', userRouter);
 
 // Error handling

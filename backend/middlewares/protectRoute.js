@@ -5,6 +5,7 @@ const AppError = require('../utils/error-handlers/AppError.js');
 
 const protectRoute = catchAsync(async (req, res, next) => {
   let token;
+
   if (req.headers.authorization) {
     token = req.headers.authorization.split(' ')[1];
   }
@@ -12,13 +13,13 @@ const protectRoute = catchAsync(async (req, res, next) => {
     return next(
       new AppError(401, 'Missing authenticated Token!, Please login')
     );
-  // 2-)TOKEN VERIFICATION
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  // 3-)CHECK IF USER EXIST
-  const user = await User.findById(decoded.userId);
+
+  const { userId } = jwt.verify(token, process.env.JWT_SECRET);
+  const user = await User.findById(userId);
 
   if (!user)
     return next(new AppError(401, 'Invalid signature! please log in again'));
+
   req.user = user;
   next();
 
