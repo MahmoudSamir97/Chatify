@@ -26,7 +26,7 @@ function App() {
           path="/setting"
           element={authUser ? <Setting /> : <Navigate to={"/Login"} />}
         />
-        <Route path="/user/:id/verify/:token" element={<EmailVerify />} />
+        <Route path="/auth/:id/verify/:token" element={<EmailVerify />} />
         <Route
           path="/auth/reset-password/:id/:token"
           element={<ResetPassword />}

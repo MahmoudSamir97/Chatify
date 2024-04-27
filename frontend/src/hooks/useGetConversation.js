@@ -10,15 +10,16 @@ function useGetConversation() {
     const getConversations = async () => {
       setLoading(true);
       try {
-        const url = "http://localhost:4000/api/user/conversations";
         // TOKEN CONFIG (localstorage)
+
+        const url = "http://localhost:4000/api/user/conversations";
         const token = localStorage.getItem("token").replace(/^"|"$/g, ""); // Remove surrounding quotes
         const config = {
           headers: { Authorization: `Bearer ${token}` },
         };
-        // TOKEN CONFIG (localstorage)
 
         const { data } = await axios.get(url, config);
+
         setConversations(data);
       } catch (error) {
         toast.error(error.message);
@@ -29,7 +30,7 @@ function useGetConversation() {
     getConversations();
   }, []);
 
-  return { loading, conversations };
+  return { loading, conversations, setConversations };
 }
 
 export default useGetConversation;

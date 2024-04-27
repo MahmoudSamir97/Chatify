@@ -2,7 +2,6 @@ import { useState } from "react";
 import useConversation from "../zustand/useConversation";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { useSocketContext } from "../context/SocketContext";
 
 function useSendMessages() {
   const [loading, setLoading] = useState(false);
