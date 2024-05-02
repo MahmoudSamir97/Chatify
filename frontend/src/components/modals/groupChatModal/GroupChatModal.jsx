@@ -1,26 +1,46 @@
 import React, { useRef, useState } from "react";
-import useGetConversation from "../../hooks/useGetConversation";
+import useGetConversation from "../../../hooks/useGetConversation";
 import toast from "react-hot-toast";
-import UserListItem from "../userAvatar/UserListItem";
-import UserBadgeItem from "../userAvatar/UserBadgeItem";
+import UserListItem from "../../userAvatar/UserListItem";
+import UserBadgeItem from "../../userAvatar/UserBadgeItem";
 import { Box } from "@chakra-ui/layout";
 import { FaPlus } from "react-icons/fa6";
-import avatarImg from "../../assets/images/avatar.png";
+import avatarImg from "../../../assets/images/avatar.png";
 import axios from "axios";
 
 const GroupChatModal = ({ closeModal }) => {
   const [groupName, setGroupName] = useState("");
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [imageFile, setImageFile] = useState(null);
+  const [isCreatingGroup, setIsCreatingGroup] = useState(false);
+  const { conversations, setConversations } = useGetConversation();
 
   const [imagePreview, setImagePreview] = useState(null);
   const [searchResult, setSearchResult] = useState(null);
-  const { conversations, setConversations } = useGetConversation();
+
+  const [loading, setLoading] = useState(null);
 
   const groupImageRef = useRef();
 
+  const token = localStorage.getItem("token").replace(/^"|"$/g, ""); // Remove surrounding quotes
+  const config = {
+    headers: { Authorization: `Bearer ${token}` },
+  };
+
+  const resetCreateGroup = (group) => {
+    setGroupName("");
+    setImageFile(null);
+    setImagePreview(null);
+    setSelectedUsers([]);
+    setConversations([...conversations, group]);
+    setIsCreatingGroup(false);
+    closeModal();
+
+    toast.success("Chat group created successfully");
+  };
+
   const handleGroup = (userToAdd) => {
-    if (selectedUsers.includes(userToAdd)) {
+    if (selectedUsers.some((user) => user._id === userToAdd._id)) {
       toast.error("User already added");
       return;
     }
@@ -42,36 +62,48 @@ const GroupChatModal = ({ closeModal }) => {
 
   const handleSearch = async (query) => {
     try {
+      setLoading(true);
       if (!query) {
         setSearchResult(null);
         return;
       }
-      const searchedUser = conversations.find((c) =>
-        c.username.toLowerCase().includes(query.toLowerCase())
-      );
 
-      if (!searchedUser) {
+      const { data } = await axios.get(`/user/find?search=${query}`, config);
+
+      if (!data) {
         setSearchResult(null);
         toast.error("No such user found");
       }
-
-      setSearchResult(searchedUser);
+      setSearchResult(data);
     } catch (error) {
       console.error("Error occurred while searching:", error);
       setSearchResult(null);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const sentData = new FormData();
-    const usersToSend = selectedUsers.map((user) => user._id);
-    sentData.append("groupName", groupName);
-    sentData.append("users", usersToSend);
-    if (imageFile) {
-      sentData.append("groupImage", imageFile);
+    try {
+      e.preventDefault();
+      setIsCreatingGroup(true);
+      const sentData = new FormData();
+      const usersToSend = selectedUsers.map((user) => user._id);
+      sentData.append("groupName", groupName);
+      sentData.append("users", usersToSend);
+      if (imageFile) {
+        sentData.append("groupImage", imageFile);
+      }
+      const { data } = await axios.post("/chat/create-group", sentData, config);
+      resetCreateGroup(data);
+    } catch (error) {
+      if (!error.response) return toast.error(error.message);
+
+      const errorMessage = error.response.data.message;
+      toast.error(errorMessage);
+    } finally {
+      setIsCreatingGroup(false);
     }
-    const res = await axios.post("http://localhost:4000/api/");
   };
 
   return (
@@ -80,7 +112,7 @@ const GroupChatModal = ({ closeModal }) => {
         id="crud-modal"
         tabIndex={-1}
         aria-hidden="true"
-        className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-50 z-50"
+        className="fixed top-0 left-0 w-full h-screen flex justify-center items-center bg-black bg-opacity-50 z-50"
       >
         <div className="relative p-4 w-full max-w-md max-h-full">
           {/* Modal content */}
@@ -156,7 +188,7 @@ const GroupChatModal = ({ closeModal }) => {
                   </div>
                 </div>
 
-                <div className="col-span-2">
+                <div className="col-span-2 ">
                   <label
                     htmlFor="users"
                     className="block mb-2 mt-0 text-sm font-medium text-gray-900 dark:text-white"
@@ -170,7 +202,6 @@ const GroupChatModal = ({ closeModal }) => {
                     onChange={(e) => handleSearch(e.target.value)}
                     className="bg-gray-50 border mb-1 border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                     placeholder="Add group users"
-                    required
                   />
                   <Box
                     width="100%"
@@ -186,16 +217,26 @@ const GroupChatModal = ({ closeModal }) => {
                       />
                     ))}
                   </Box>
-                  {searchResult && (
-                    <UserListItem
-                      key={searchResult?._id}
-                      user={searchResult}
-                      handleFunction={() => handleGroup(searchResult)}
-                    />
+                  {loading ? (
+                    <div className="loading loading-spinner text-center my-2"></div>
+                  ) : (
+                    searchResult
+                      ?.slice(0, 4)
+                      .map((res) => (
+                        <UserListItem
+                          key={res?._id}
+                          user={res}
+                          handleAddUser={() => handleGroup(res)}
+                        />
+                      ))
                   )}
-                  {/* selected users suggestion */}
                 </div>
               </div>
+              {isCreatingGroup && (
+                <div className="text-center my-2">
+                  <div className="loading loading-spinner"></div>
+                </div>
+              )}
               <div className="text-center mt-3">
                 <button
                   type="submit"

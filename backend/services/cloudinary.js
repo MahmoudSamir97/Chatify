@@ -1,3 +1,6 @@
+const ImageDataURI = require('image-data-uri');
+const { compressImage } = require('../utils/compressImage');
+
 const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
@@ -7,9 +10,7 @@ cloudinary.config({
   secure: true,
 });
 
-exports.uploadImage = async (imagePath) => {
-  /* Use the uploaded file's name as the asset's public ID and
-   allow overwriting the asset with new versions */
+exports.uploadImage = async (req) => {
   const options = {
     use_filename: true,
     unique_filename: false,
@@ -18,7 +19,14 @@ exports.uploadImage = async (imagePath) => {
   };
 
   try {
-    const result = await cloudinary.uploader.upload(imagePath, options);
+    const compressedImageBuffer = await compressImage(req.file.buffer);
+
+    const mediaType = req.file.mimetype.split('/')[1].toUpperCase();
+
+    const dataURI = ImageDataURI.encode(compressedImageBuffer, mediaType);
+
+    const result = await cloudinary.uploader.upload(dataURI, options);
+
     return result;
   } catch (error) {
     console.error(error);

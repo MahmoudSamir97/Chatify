@@ -18,9 +18,9 @@ function Signin() {
     try {
       const url = "http://localhost:4000/api/auth/login";
       const { data } = await axios.post(url, values);
-      // local storage
       localStorage.setItem("chat-user", JSON.stringify(data.user));
       localStorage.setItem("token", JSON.stringify(data.token));
+      console.log(data.user);
       setAuthUser(data.user);
       actions.resetForm();
       navigate("/");

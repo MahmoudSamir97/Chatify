@@ -9,11 +9,14 @@ const {
   showProfile,
   addProfileImage,
   removeProfileImage,
+  getSearchedUsers,
 } = require('../controllers/userController');
 
 userRouter.use(protectRoute);
 
 userRouter.get('/conversations', getUsersForSidebar);
+
+userRouter.get('/find', getSearchedUsers);
 
 userRouter
   .route('/profile')
@@ -22,7 +25,7 @@ userRouter
 
 userRouter
   .route('/profile-image')
-  .post(upload.single('profilePic'), addProfileImage)
+  .post(upload.single('profileImage'), addProfileImage)
   .delete(removeProfileImage);
 
 module.exports = userRouter;

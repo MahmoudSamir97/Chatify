@@ -1,19 +1,20 @@
-const Conversation = require('../models/conversationModel');
+const Chat = require('../models/chatModel');
 const Message = require('../models/messageModel');
 const { getReceiverSocketId, io } = require('../socket/socketManager');
 const { catchAsync } = require('../utils/error-handlers/catchAsync');
 
 exports.sendMessage = catchAsync(async (req, res, next) => {
   const { message } = req.body;
+
   const { id: receiverId } = req.params;
   const senderId = req.user._id;
 
-  let conversation = await Conversation.findOne({
+  let conversation = await Chat.findOne({
     participants: { $all: [senderId, receiverId] },
   });
 
   if (!conversation) {
-    conversation = await Conversation.create({
+    conversation = await Chat.create({
       participants: [senderId, receiverId],
     });
   }
@@ -28,17 +29,14 @@ exports.sendMessage = catchAsync(async (req, res, next) => {
     conversation.messages.push(newMessage._id);
   }
 
-  // await conversation.save();
-  // await newMessage.save();
-
-  // this will run in parallel
   await Promise.all([conversation.save(), newMessage.save()]);
-  // SOCKET IO FUNCTIONALITY WILL GO HERE
+
   const receiverSocketId = getReceiverSocketId(receiverId);
+
   if (receiverSocketId) {
-    // io.to(<socket_id>).emit() used to send events to specific client
     io.to(receiverSocketId).emit('newMessage', newMessage);
   }
+
   res.status(201).json(newMessage);
 });
 
@@ -46,9 +44,9 @@ exports.getMessages = catchAsync(async (req, res, next) => {
   const { id: userToChatId } = req.params;
   const senderId = req.user._id;
 
-  const conversation = await Conversation.findOne({
+  const conversation = await Chat.findOne({
     participants: { $all: [senderId, userToChatId] },
-  }).populate('messages'); // NOT REFERENCE BUT ACTUAL MESSAGES
+  }).populate('messages');
 
   if (!conversation) return res.status(200).json([]);
 

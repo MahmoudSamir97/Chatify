@@ -1,20 +1,50 @@
-import React from "react";
+import React, { useEffect } from "react";
 import Conversation from "./Conversation";
 import useGetConversation from "../../hooks/useGetConversation";
+import toast from "react-hot-toast";
+import axios from "axios";
 
-function Conversations() {
-  const { loading, conversations } = useGetConversation();
+function Conversations({ fetchAgain }) {
+  const { loading, conversations, setConversations } = useGetConversation();
+
+  const fetchChats = async () => {
+    try {
+      // CONFIG
+      const token = localStorage.getItem("token").replace(/^"|"$/g, ""); // Remove surrounding quotes
+      const config = {
+        headers: { Authorization: `Bearer ${token}` },
+      };
+
+      const { data } = await axios.get("/chat", config);
+      setConversations(data.populatedChats);
+    } catch (error) {
+      toast(error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchChats();
+    // eslint-disable-next-line
+  }, [fetchAgain]);
+
   return (
-    <div className="py-2 flex flex-col overflow-auto">
-      {conversations.map((conv, idx) => (
-        <Conversation
-          key={conv._id}
-          conversation={conv}
-          lastIdx={idx === conversations.length - 1}
-        />
-      ))}
+    <div
+      className="flex relative flex-col h-full w-full overflow-auto flex-grow"
+      style={{ width: "30rem" }}
+    >
+      <h1 className="text-center py-2 mb-5 text-2xl text-gray-400">Chats</h1>
+      {conversations &&
+        conversations?.map((conv, idx) => (
+          <Conversation
+            key={conv?._id}
+            conversation={conv}
+            lastIdx={idx === conversations.length - 1}
+          />
+        ))}
       {loading ? (
-        <span className="loading loading-spinner mx-auto"></span>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="loading loading-spinner"></div>
+        </div>
       ) : null}
     </div>
   );

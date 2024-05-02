@@ -4,6 +4,7 @@ const chatSchema = new Schema(
   {
     chatName: {
       type: String,
+      default: 'sender',
       trim: true,
     },
 

@@ -4,11 +4,11 @@ import Signup from "./pages/auth/signup/Signup";
 import Login from "./pages/auth/login/Login";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
-import Setting from "./pages/setting/Setting";
 import EmailVerify from "./pages/auth/verify/EmailVerify";
 import ForgetPassword from "./pages/auth/forgetPassword/ForgetPassword";
 import { useAuthContext } from "./context/AuthContext";
 import ResetPassword from "./pages/auth/resetPassword/ResetPassword";
+import Profile from "./pages/setting/Setting";
 
 function App() {
   const { authUser } = useAuthContext();
@@ -23,8 +23,8 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/forget-password" element={<ForgetPassword />} />
         <Route
-          path="/setting"
-          element={authUser ? <Setting /> : <Navigate to={"/Login"} />}
+          path="/profile"
+          element={authUser ? <Profile /> : <Navigate to={"/Login"} />}
         />
         <Route path="/auth/:id/verify/:token" element={<EmailVerify />} />
         <Route

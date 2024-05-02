@@ -1,21 +1,34 @@
 const chatRouter = require('express').Router();
+
 const {
-  accessChat,
   fetchChats,
   createGroupChat,
   renameGroup,
   removeFromGroup,
   addToGroup,
+  createPrivateChat,
+  changeGroupImage,
+  deleteGroup,
 } = require('../controllers/chatController');
+const findPrivateChat = require('../middlewares/findChat');
+const groupValidator = require('../middlewares/groupValidator');
+const upload = require('../middlewares/multer');
 const protectRoute = require('../middlewares/protectRoute');
 
 chatRouter.use(protectRoute);
 
-chatRouter.route('/').post(accessChat);
-chatRouter.route('/').get(fetchChats);
-chatRouter.route('/group').post(createGroupChat);
-chatRouter.route('/rename').put(renameGroup);
-chatRouter.route('/groupremove').put(removeFromGroup);
-chatRouter.route('/groupadd').put(addToGroup);
+chatRouter.route('/').get(fetchChats).post(findPrivateChat, createPrivateChat);
+
+chatRouter.post(
+  '/create-group',
+  upload.single('groupImage'),
+  groupValidator,
+  createGroupChat
+);
+chatRouter.patch('/rename-group', renameGroup);
+chatRouter.patch('/add-user', addToGroup);
+chatRouter.patch('/remove-user', removeFromGroup);
+chatRouter.patch('/update-image', upload.single('chatImage'), changeGroupImage);
+chatRouter.post('/delete-group', deleteGroup);
 
 module.exports = chatRouter;

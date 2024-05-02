@@ -3,7 +3,7 @@ import avatarImg from "../../assets/images/avatar.png";
 
 const UserBadgeItem = ({ user, handleDelete, admin }) => {
   return (
-    <div className="inline-flex text-xs items-center bg-purple-700 text-white px-2 py-1 rounded-lg m-1 mb-2 cursor-pointer">
+    <div className="inline-flex text-xs items-center bg-purple-700 text-white px-2 py-1 rounded-lg m-1  cursor-pointer">
       <span className="mr-1">{user.username}</span>
       {admin === user._id && <span className="text-xs">(Admin)</span>}
       <button onClick={handleDelete} className="ml-1 focus:outline-none">

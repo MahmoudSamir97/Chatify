@@ -3,7 +3,7 @@ const sharp = require('sharp');
 exports.compressImage = async (imagePath) => {
   try {
     const resizedImageBuffer = await sharp(imagePath)
-      .resize({ width: 800 })
+      .resize({ width: 1000 })
       .jpeg({ quality: 80 })
       .toBuffer();
 

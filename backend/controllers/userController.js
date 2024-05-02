@@ -27,6 +27,8 @@ exports.getSearchedUsers = catchAsync(async (req, res, next) => {
         ],
       }
     : {};
+  if (!keyword)
+    return next(new AppError(404, "Enter user's email or username to serach "));
 
   const users = await User.find(keyword).find({ _id: { $ne: user?._id } });
 
@@ -34,16 +36,20 @@ exports.getSearchedUsers = catchAsync(async (req, res, next) => {
 });
 
 exports.showProfile = catchAsync(async (req, res, next) => {
+  if (!req.user._id) return next(new AppError(404, 'Missing user Id'));
+
   const user = await User.findById(req.user._id);
 
-  await user.save();
+  if (!user) return next(new AppError(404, 'No user founded'));
+
+  res.status(200).json({ user });
 });
 
 exports.updateProfile = catchAsync(async (req, res, next) => {
   const updatedUser = await User.findByIdAndUpdate(
     req.user._id,
     { ...req.body },
-    { runValidators: true, new: true }
+    { new: true },
   );
 
   res.status(200).json({
@@ -54,37 +60,39 @@ exports.updateProfile = catchAsync(async (req, res, next) => {
 });
 
 exports.addProfileImage = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user._id);
-  if (!req.file) next(new AppError(400, 'Profile picture not provided!'));
+  if (!req.file) return next(new AppError(404, 'No image provided'));
 
-  const compressedImageBuffer = await compressImage(req.file.buffer);
+  const { secure_url, public_id } = await uploadImage(req);
 
-  const mediaType = req.file.mimetype.split('/')[1].toUpperCase();
-  const dataURI = imageDataURI.encode(compressedImageBuffer, mediaType);
+  const updatedChat = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      profileImage: {
+        secure_url,
+        public_id,
+      },
+    },
+    { new: true },
+  );
 
-  const { secure_url, public_id } = await uploadImage(dataURI);
-
-  user.profileImage.secure_url = secure_url;
-  user.profileImage.public_id = public_id;
-  await user.save();
-
-  res.status(201).json({
-    status: 'success',
-    message: 'Image added successfully',
-    user,
-  });
+  res.status(200).json({ updatedChat });
 });
 
 exports.removeProfileImage = catchAsync(async (req, res, next) => {
-  const user = await User.findByIdAndUpdate(req.user._id, {
-    profileImage: { secure_url: '', public_id: '' },
-  });
+  const user = await User.findById(req.user._id);
 
-  const result = await destroy(user.profileImage.public_id);
+  await destroy(user.profileImage.public_id);
+
+  user.profileImage = {
+    public_id: '',
+    secure_url: '',
+  };
+
+  await user.save();
 
   res.status(200).json({
     status: 'success',
     message: 'Image deleted successfully',
-    result,
+    user,
   });
 });

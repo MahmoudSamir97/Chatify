@@ -2,11 +2,11 @@ import { Avatar } from "@chakra-ui/avatar";
 import { Box, Text } from "@chakra-ui/layout";
 import avatarImg from "../../assets/images/avatar.png";
 
-const UserListItem = ({ handleFunction, user }) => {
+const UserListItem = ({ handleAddUser, user }) => {
   return (
     <div
       className="mt-1 w-70 text-sm bg-green-200 hover:bg-green-100 rounded-lg shadow-lg z-10 cursor-pointer"
-      onClick={handleFunction}
+      onClick={handleAddUser}
     >
       <div key={user.id} className="flex items-center p-2 ">
         <img
