@@ -9,8 +9,9 @@ import axios from 'axios';
 import { useAuthContext } from '../../../context/AuthContext';
 import useConversation from '../../../zustand/useConversation';
 import UserList from '../../utils/UserList';
+import { useFetchContext } from '../../../context/FetchContext';
 
-function EditGroupModal({ chat, closeModal, fetchAgain, setFetchAgain }) {
+function EditGroupModal({ chat, closeModal }) {
   const [chatName, setchatName] = useState('');
   const [selectedUsers, setSelectedUsers] = useState(chat.users);
   const { conversations, setConversations } = useGetConversation();
@@ -19,6 +20,8 @@ function EditGroupModal({ chat, closeModal, fetchAgain, setFetchAgain }) {
   const [loading, setLoading] = useState(false);
   const { selectedConversation, setSelectedConversation } = useConversation();
   const { authUser } = useAuthContext();
+  const { fetchAgain, setFetchAgain } = useFetchContext();
+
   const groupImageRef = useRef();
 
   // CONFIG
@@ -26,8 +29,6 @@ function EditGroupModal({ chat, closeModal, fetchAgain, setFetchAgain }) {
   const config = {
     headers: { Authorization: `Bearer ${token}` },
   };
-
-  // MODAL UTILS
 
   const successHandler = (updatedChat) => {
     setSelectedConversation(updatedChat);
@@ -195,7 +196,8 @@ function EditGroupModal({ chat, closeModal, fetchAgain, setFetchAgain }) {
       id="authentication-modal"
       tabIndex={-1}
       aria-hidden="true"
-      className="fixed top-0 left-0 w-full h-screen flex justify-center overflow-auto items-center bg-black bg-opacity-50 z-50 ">
+      className="fixed top-0 left-0 w-full h-screen flex justify-center overflow-auto items-center bg-black bg-opacity-50 z-50 "
+    >
       <div className="relative p-4 w-full max-w-md max-h-full">
         <div className="relative bg-white rounded-lg shadow dark:bg-gray-700">
           <div className="flex  items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
@@ -206,13 +208,15 @@ function EditGroupModal({ chat, closeModal, fetchAgain, setFetchAgain }) {
               type="button"
               className="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
               data-modal-hide="authentication-modal"
-              onClick={closeModal}>
+              onClick={closeModal}
+            >
               <svg
                 className="w-3 h-3"
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
-                viewBox="0 0 14 14">
+                viewBox="0 0 14 14"
+              >
                 <path
                   stroke="currentColor"
                   strokeLinecap="round"
@@ -229,7 +233,8 @@ function EditGroupModal({ chat, closeModal, fetchAgain, setFetchAgain }) {
               <div>
                 <label
                   htmlFor="groupname"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+                >
                   Group Name
                 </label>
                 <div className="flex justify-between items-center">
@@ -244,7 +249,8 @@ function EditGroupModal({ chat, closeModal, fetchAgain, setFetchAgain }) {
                   <button
                     type="button"
                     onClick={handleGroupRename}
-                    class="text-white bg-gradient-to-r ms-5 mt-2 from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 shadow-lg shadow-teal-500/50 dark:shadow-lg dark:shadow-teal-800/80 font-medium rounded-lg text-sm px-2 py-2 text-center me-2 mb-2">
+                    className="text-white bg-gradient-to-r ms-5 mt-2 from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-teal-300 dark:focus:ring-teal-800 shadow-lg shadow-teal-500/50 dark:shadow-lg dark:shadow-teal-800/80 font-medium rounded-lg text-sm px-2 py-2 text-center me-2 mb-2"
+                  >
                     Update Name
                   </button>
                 </div>
@@ -253,7 +259,8 @@ function EditGroupModal({ chat, closeModal, fetchAgain, setFetchAgain }) {
               <div className="flex flex-col justify-center">
                 <label
                   htmlFor="users"
-                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+                  className="block mb-2 text-sm font-medium text-gray-900 "
+                >
                   Users
                 </label>
                 <input
@@ -267,7 +274,8 @@ function EditGroupModal({ chat, closeModal, fetchAgain, setFetchAgain }) {
                   width="100%"
                   display="flex"
                   flexWrap="wrap"
-                  className="mb-2">
+                  className="mb-2"
+                >
                   {selectedUsers.map((user) => (
                     <UserBadgeItem
                       key={user._id}
@@ -287,7 +295,8 @@ function EditGroupModal({ chat, closeModal, fetchAgain, setFetchAgain }) {
               <div className="relative w-full text-center mb-2">
                 <label
                   htmlFor="users"
-                  className="block mb-3 text-sm font-medium text-gray-900 dark:text-white">
+                  className="block mb-3 text-sm font-medium text-gray-900 dark:text-white"
+                >
                   Group image
                 </label>
                 <div className="w-full flex justify-center items-center">
@@ -321,7 +330,8 @@ function EditGroupModal({ chat, closeModal, fetchAgain, setFetchAgain }) {
               <button
                 type="button"
                 onClick={handleDeleteGroup}
-                class="py-2 px-3 w-full text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900">
+                className="py-2 px-3 w-full text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900"
+              >
                 Delete group
               </button>
             </form>

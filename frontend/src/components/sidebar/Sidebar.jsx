@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import Conversations from "./Conversations";
-import Menu from "./Menu";
-import SearchUser from "./SearchUser";
+import React, { useState } from 'react';
+import Conversations from './Conversations';
+import Menu from './Menu';
+import SearchUser from './SearchUser';
 
-function Sidebar({ fetchAgain }) {
+function Sidebar() {
   const [showSearchSidebar, setshowSearchSidebar] = useState(false);
 
   const toggleSearchSidebar = () => {
@@ -14,7 +14,7 @@ function Sidebar({ fetchAgain }) {
       {showSearchSidebar && <SearchUser />}
       <Menu toggleSidebar={toggleSearchSidebar} />
       <div className="border-r border-slate-500 p-4 flex flex-col">
-        <Conversations fetchAgain={fetchAgain} />
+        <Conversations />
       </div>
     </div>
   );

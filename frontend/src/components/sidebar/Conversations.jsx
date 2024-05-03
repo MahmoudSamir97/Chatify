@@ -1,21 +1,22 @@
-import React, { useEffect } from "react";
-import Conversation from "./Conversation";
-import useGetConversation from "../../hooks/useGetConversation";
-import toast from "react-hot-toast";
-import axios from "axios";
+import React, { useEffect } from 'react';
+import Conversation from './Conversation';
+import useGetConversation from '../../hooks/useGetConversation';
+import toast from 'react-hot-toast';
+import axios from 'axios';
+import { useFetchContext } from '../../context/FetchContext';
 
-function Conversations({ fetchAgain }) {
+function Conversations() {
   const { loading, conversations, setConversations } = useGetConversation();
+  const { fetchAgain } = useFetchContext();
 
   const fetchChats = async () => {
     try {
-      // CONFIG
-      const token = localStorage.getItem("token").replace(/^"|"$/g, ""); // Remove surrounding quotes
+      const token = localStorage.getItem('token').replace(/^"|"$/g, ''); // Remove surrounding quotes
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
 
-      const { data } = await axios.get("/chat", config);
+      const { data } = await axios.get('/chat', config);
       setConversations(data.populatedChats);
     } catch (error) {
       toast(error.message);
@@ -30,7 +31,7 @@ function Conversations({ fetchAgain }) {
   return (
     <div
       className="flex relative flex-col h-full w-full overflow-auto flex-grow"
-      style={{ width: "30rem" }}
+      style={{ width: '30rem' }}
     >
       <h1 className="text-center py-2 mb-5 text-2xl text-gray-400">Chats</h1>
       {conversations &&

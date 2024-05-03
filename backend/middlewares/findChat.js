@@ -5,7 +5,6 @@ const { catchAsync } = require('../utils/error-handlers/catchAsync.js');
 
 const findPrivateChat = catchAsync(async (req, res, next) => {
   const { userId } = req.body;
-  console.log(userId);
 
   if (!userId) return next(new AppError(400, 'User not provided'));
 

@@ -1,21 +1,43 @@
-import React, { useEffect, useState } from "react";
-import Messages from "./Messages";
-import MessageInput from "./MessageInput";
-import { TiMessages } from "react-icons/ti";
-import useConversation from "../../zustand/useConversation";
-import dotsIcon from "../../assets/images/icons8-three-dots-50.png";
-import EditGroupModal from "../modals/editGroupModal/EditGroupModal";
-import { useAuthContext } from "../../context/AuthContext";
+import React, { useEffect, useState } from 'react';
+import Messages from './Messages';
+import MessageInput from './MessageInput';
+import { TiMessages } from 'react-icons/ti';
+import useConversation from '../../zustand/useConversation';
+import dotsIcon from '../../assets/images/icons8-three-dots-50.png';
+import EditGroupModal from '../modals/editGroupModal/EditGroupModal';
+import { useAuthContext } from '../../context/AuthContext';
+import { useSocketContext } from '../../context/SocketContext';
 
 function MessageContainer({ fetchAgain, setFetchAgain }) {
-  const { selectedConversation, setSelectedConversation } = useConversation();
   const [showEditModal, setShowEditModal] = useState(false);
+  const { selectedConversation, setSelectedConversation } = useConversation();
+  const { setMessages, messages } = useConversation();
+  const { authUser } = useAuthContext();
+  const { socket } = useSocketContext();
+  const selectedCompareChat = selectedConversation;
+
+  const reciever = selectedConversation?.users.find(
+    (user) => user._id !== authUser._id,
+  );
+
   useEffect(() => {
-    // CLEANUP FUNCTION (unmount)
     return () => {
       setSelectedConversation(null);
     };
   }, [setSelectedConversation]);
+
+  useEffect(() => {
+    socket?.on('message recieved', (newMessage) => {
+      if (
+        !selectedCompareChat ||
+        newMessage.chat._id !== selectedConversation._id
+      ) {
+        // NOTIFICATIONS
+      } else {
+        setMessages([...messages, newMessage]);
+      }
+    });
+  });
 
   const handleDotsClick = () => {
     setShowEditModal(!showEditModal);
@@ -24,15 +46,15 @@ function MessageContainer({ fetchAgain, setFetchAgain }) {
     setShowEditModal(false);
   };
   return (
-    <div className=" flex flex-col flex-5 p-2" style={{ width: "73rem" }}>
+    <div className=" flex flex-col flex-5 p-2" style={{ width: '73rem' }}>
       {selectedConversation ? (
         <>
-          {selectedConversation.isGroupChat ? (
+          {selectedConversation?.isGroupChat ? (
             <>
               <div className="relative bg-slate-500 px-4 py-2 mb-2">
-                <span className="label-text ">To:</span>{" "}
+                <span className="label-text ">To:</span>{' '}
                 <span className="text-gray-900 font-bold">
-                  {selectedConversation.chatName}
+                  {selectedConversation?.chatName}
                 </span>
                 <div
                   className="absolute top-0 right-0 mt-2 mr-2 cursor-pointer"
@@ -56,9 +78,9 @@ function MessageContainer({ fetchAgain, setFetchAgain }) {
           ) : (
             <>
               <div className="bg-slate-500 px-4 py-2 mb-2">
-                <span className="label-text">To:</span>{" "}
+                <span className="label-text">To:</span>{' '}
                 <span className="text-gray-900 font-bold">
-                  {selectedConversation.users[1].username}
+                  {reciever.username}
                 </span>
               </div>
 

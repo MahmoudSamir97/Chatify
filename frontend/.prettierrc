@@ -4,10 +4,9 @@
   "arrowParens": "always",
   "printWidth": 80,
   "embeddedLanguageFormatting": "auto",
-  "jsxBracketSameLine": true,
+  "jsxBracketSameLine": false,
   "tabWidth": 2,
   "proseWrap": "always",
   "semi": true,
-  "bracketSameLine": true,
   "bracketSpacing": true
 }

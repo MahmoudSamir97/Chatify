@@ -160,6 +160,7 @@ exports.changeGroupImage = catchAsync(async (req, res, next) => {
   );
   res.status(200).json({ updatedChat });
 });
+
 exports.deleteGroup = catchAsync(async (req, res, next) => {
   const { chatId } = req.body;
 

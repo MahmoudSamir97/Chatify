@@ -1,29 +1,30 @@
-import React, { useEffect, useRef } from "react";
-import Message from "./Message";
-import useGetMessages from "../../hooks/useGetMessages";
-import MessageSkeleton from "../skeletons/MessageSceleton";
-import useListenMessage from "../../hooks/useListenMessage";
+import React, { useEffect, useRef } from 'react';
+import Message from './Message';
+import useGetMessages from '../../hooks/useGetMessages';
+import MessageSkeleton from '../skeletons/MessageSceleton';
+import useListenMessage from '../../hooks/useListenMessage';
 
 function Messages() {
-  const { loading, messages } = useGetMessages();
+  const { messages, loading } = useGetMessages();
   useListenMessage();
   const lastMsgRef = useRef();
 
   useEffect(() => {
     setTimeout(() => {
-      lastMsgRef.current?.scrollIntoView({ behavior: "smooth" });
+      lastMsgRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
   }, [messages]);
+
   return (
     <div
       className="px-4 flex-1 overflow-auto"
       style={{
-        overflowY: "scroll",
+        overflowY: 'scroll',
       }}
     >
       {!loading &&
-        messages.length > 0 &&
-        messages.map((message) => (
+        messages?.length > 0 &&
+        messages?.map((message) => (
           <div key={message._id} ref={lastMsgRef}>
             <Message message={message} />
           </div>

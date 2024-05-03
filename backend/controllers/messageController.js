@@ -1,56 +1,46 @@
 const Chat = require('../models/chatModel');
 const Message = require('../models/messageModel');
-const { getReceiverSocketId, io } = require('../socket/socketManager');
+const User = require('../models/userModel');
+const AppError = require('../utils/error-handlers/AppError');
 const { catchAsync } = require('../utils/error-handlers/catchAsync');
 
 exports.sendMessage = catchAsync(async (req, res, next) => {
-  const { message } = req.body;
+  const { chatId, content } = req.body;
 
-  const { id: receiverId } = req.params;
-  const senderId = req.user._id;
+  if (!chatId || !content) return next(new AppError(400, 'No data provided'));
 
-  let conversation = await Chat.findOne({
-    participants: { $all: [senderId, receiverId] },
+  let newMessage = await Message.create({
+    sender: req.user._id,
+    chat: chatId,
+    content,
   });
 
-  if (!conversation) {
-    conversation = await Chat.create({
-      participants: [senderId, receiverId],
-    });
-  }
+  newMessage = await newMessage.populate('sender', 'username profileImage');
 
-  const newMessage = new Message({
-    senderId,
-    receiverId,
-    message,
+  newMessage = await newMessage.populate('chat');
+
+  newMessage = await User.populate(newMessage, {
+    path: 'chat.users',
+    select: 'username profileImage email',
   });
 
-  if (newMessage) {
-    conversation.messages.push(newMessage._id);
-  }
+  await Chat.findByIdAndUpdate(chatId, {
+    latestMessage: newMessage._id,
+  });
 
-  await Promise.all([conversation.save(), newMessage.save()]);
-
-  const receiverSocketId = getReceiverSocketId(receiverId);
-
-  if (receiverSocketId) {
-    io.to(receiverSocketId).emit('newMessage', newMessage);
-  }
-
-  res.status(201).json(newMessage);
+  res.status(200).json({ newMessage });
 });
 
 exports.getMessages = catchAsync(async (req, res, next) => {
-  const { id: userToChatId } = req.params;
-  const senderId = req.user._id;
+  const { chatId } = req.params;
 
-  const conversation = await Chat.findOne({
-    participants: { $all: [senderId, userToChatId] },
-  }).populate('messages');
+  if (!chatId) return next(new AppError(400, 'No Chat id provided'));
 
-  if (!conversation) return res.status(200).json([]);
+  const messages = await Message.find({ chat: chatId })
+    .populate('sender', 'username profileImage email')
+    .populate('chat');
 
-  const messages = conversation.messages;
+  if (!messages) return next(new AppError(404, 'No messages founded'));
 
-  res.status(200).json(messages);
+  res.status(200).json({ messages });
 });

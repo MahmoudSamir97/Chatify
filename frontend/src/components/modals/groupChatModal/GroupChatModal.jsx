@@ -1,19 +1,21 @@
-import React, { useRef, useState } from "react";
-import useGetConversation from "../../../hooks/useGetConversation";
-import toast from "react-hot-toast";
-import UserListItem from "../../userAvatar/UserListItem";
-import UserBadgeItem from "../../userAvatar/UserBadgeItem";
-import { Box } from "@chakra-ui/layout";
-import { FaPlus } from "react-icons/fa6";
-import avatarImg from "../../../assets/images/avatar.png";
-import axios from "axios";
+import React, { useRef, useState } from 'react';
+import useGetConversation from '../../../hooks/useGetConversation';
+import toast from 'react-hot-toast';
+import UserListItem from '../../userAvatar/UserListItem';
+import UserBadgeItem from '../../userAvatar/UserBadgeItem';
+import { Box } from '@chakra-ui/layout';
+import { FaPlus } from 'react-icons/fa6';
+import avatarImg from '../../../assets/images/avatar.png';
+import axios from 'axios';
+import { useFetchContext } from '../../../context/FetchContext';
 
 const GroupChatModal = ({ closeModal }) => {
-  const [groupName, setGroupName] = useState("");
+  const [groupName, setGroupName] = useState('');
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [imageFile, setImageFile] = useState(null);
   const [isCreatingGroup, setIsCreatingGroup] = useState(false);
   const { conversations, setConversations } = useGetConversation();
+  const { fetchAgain, setFetchAgain } = useFetchContext();
 
   const [imagePreview, setImagePreview] = useState(null);
   const [searchResult, setSearchResult] = useState(null);
@@ -22,13 +24,13 @@ const GroupChatModal = ({ closeModal }) => {
 
   const groupImageRef = useRef();
 
-  const token = localStorage.getItem("token").replace(/^"|"$/g, ""); // Remove surrounding quotes
+  const token = localStorage.getItem('token').replace(/^"|"$/g, ''); // Remove surrounding quotes
   const config = {
     headers: { Authorization: `Bearer ${token}` },
   };
 
   const resetCreateGroup = (group) => {
-    setGroupName("");
+    setGroupName('');
     setImageFile(null);
     setImagePreview(null);
     setSelectedUsers([]);
@@ -36,12 +38,12 @@ const GroupChatModal = ({ closeModal }) => {
     setIsCreatingGroup(false);
     closeModal();
 
-    toast.success("Chat group created successfully");
+    toast.success('Chat group created successfully');
   };
 
   const handleGroup = (userToAdd) => {
     if (selectedUsers.some((user) => user._id === userToAdd._id)) {
-      toast.error("User already added");
+      toast.error('User already added');
       return;
     }
     setSelectedUsers([...selectedUsers, userToAdd]);
@@ -56,7 +58,7 @@ const GroupChatModal = ({ closeModal }) => {
 
   const handleDelete = (user) => {
     setSelectedUsers(
-      selectedUsers.filter((userObj) => userObj._id !== user._id)
+      selectedUsers.filter((userObj) => userObj._id !== user._id),
     );
   };
 
@@ -72,11 +74,11 @@ const GroupChatModal = ({ closeModal }) => {
 
       if (!data) {
         setSearchResult(null);
-        toast.error("No such user found");
+        toast.error('No such user found');
       }
       setSearchResult(data);
     } catch (error) {
-      console.error("Error occurred while searching:", error);
+      console.error('Error occurred while searching:', error);
       setSearchResult(null);
     } finally {
       setLoading(false);
@@ -89,13 +91,14 @@ const GroupChatModal = ({ closeModal }) => {
       setIsCreatingGroup(true);
       const sentData = new FormData();
       const usersToSend = selectedUsers.map((user) => user._id);
-      sentData.append("groupName", groupName);
-      sentData.append("users", usersToSend);
+      sentData.append('groupName', groupName);
+      sentData.append('users', usersToSend);
       if (imageFile) {
-        sentData.append("groupImage", imageFile);
+        sentData.append('groupImage', imageFile);
       }
-      const { data } = await axios.post("/chat/create-group", sentData, config);
+      const { data } = await axios.post('/chat/create-group', sentData, config);
       resetCreateGroup(data);
+      setFetchAgain(!fetchAgain);
     } catch (error) {
       if (!error.response) return toast.error(error.message);
 

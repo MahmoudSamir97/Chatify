@@ -1,46 +1,42 @@
-import React, { useState } from "react";
-import { useFormik } from "formik";
-import signinImage from "../../../assets/images/register.jpg";
-import axios from "axios";
-import { Link, useNavigate } from "react-router-dom";
-import { FaRegEyeSlash } from "react-icons/fa";
-import { TbEye } from "react-icons/tb";
-import toast from "react-hot-toast";
-import { useAuthContext } from "../../../context/AuthContext";
+import React, { useState } from 'react';
+import { useFormik } from 'formik';
+import signinImage from '../../../assets/images/register.jpg';
+import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
+import { FaRegEyeSlash } from 'react-icons/fa';
+import { TbEye } from 'react-icons/tb';
+import toast from 'react-hot-toast';
+import { useAuthContext } from '../../../context/AuthContext';
 
 function Signin() {
   const [passVisible, setPassVisible] = useState(false);
   const { setAuthUser } = useAuthContext();
   const navigate = useNavigate();
 
-  //   SUBMIT FUNCTION
   const onSubmit = async (values, actions) => {
     try {
-      const url = "http://localhost:4000/api/auth/login";
+      const url = 'http://localhost:4000/api/auth/login';
       const { data } = await axios.post(url, values);
-      localStorage.setItem("chat-user", JSON.stringify(data.user));
-      localStorage.setItem("token", JSON.stringify(data.token));
-      console.log(data.user);
+      localStorage.setItem('chat-user', JSON.stringify(data.user));
+      localStorage.setItem('token', JSON.stringify(data.token));
       setAuthUser(data.user);
       actions.resetForm();
-      navigate("/");
+      navigate('/');
     } catch (error) {
       const errorMessage = error.response.data.message;
       if (errorMessage) {
         console.log(error.response.data);
         toast.error(errorMessage);
       } else {
-        // generic error message
-        toast.error("Error occurred, try with different data");
+        toast.error('Error occurred, try with different data');
       }
     }
   };
 
-  // FORMIK
   const { values, isSubmitting, handleChange, handleSubmit } = useFormik({
     initialValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
     onSubmit,
   });
@@ -51,7 +47,6 @@ function Signin() {
         <div className="auth__form-container_fields-content">
           <p className="auth__form-container_fields-title">Sign in</p>
           <form onSubmit={handleSubmit}>
-            {/* SINGLE INPUT */}
             <div className="auth__form-container_fields-content_input">
               <label htmlFor="username">Email</label>
               <input
@@ -62,29 +57,26 @@ function Signin() {
                 onChange={handleChange}
               />
             </div>
-            {/* SINGLE INPUT */}
             <div className="auth__form-container_fields-content_input pass-input">
               <label htmlFor="password">Password</label>
               <div className="relative w-full">
                 <input
                   name="password"
-                  type={passVisible ? "text" : "password"}
-                  style={{ width: "100%" }}
+                  type={passVisible ? 'text' : 'password'}
+                  style={{ width: '100%' }}
                   placeholder="Password"
                   value={values.password}
                   onChange={handleChange}
                 />
                 <span
                   className="inline absolute right-2 bottom-3"
-                  onClick={() => setPassVisible((prev) => !prev)}
-                >
+                  onClick={() => setPassVisible((prev) => !prev)}>
                   {passVisible ? <TbEye /> : <FaRegEyeSlash />}
                 </span>
               </div>
               <Link
                 className="text-blue-700 text-sm inline hover:text-blue-400"
-                to={"/forget-password"}
-              >
+                to={'/forget-password'}>
                 Forget your password?
               </Link>
             </div>
@@ -96,8 +88,8 @@ function Signin() {
           </form>
           <div className="auth__form-container_fields-account login-text">
             <p>
-              Don't have an account?{" "}
-              <Link className="link" to={"/signup"}>
+              Don't have an account?{' '}
+              <Link className="link" to={'/signup'}>
                 Sign up
               </Link>
             </p>

@@ -21,6 +21,7 @@ const protectRoute = catchAsync(async (req, res, next) => {
     return next(new AppError(401, 'Invalid signature! please log in again'));
 
   req.user = user;
+
   next();
 
   // const token = req.coockie.jwt;
