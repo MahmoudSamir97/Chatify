@@ -9,7 +9,6 @@ function Conversations() {
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(false);
   const { fetchAgain } = useFetchContext();
-  console.log(Conversations);
 
   const fetchChats = async () => {
     try {

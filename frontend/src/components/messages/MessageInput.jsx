@@ -5,9 +5,12 @@ import { FaSmile } from 'react-icons/fa';
 import EmojiPicker from 'emoji-picker-react';
 import { useSocketContext } from '../../context/SocketContext';
 import useConversation from '../../zustand/useConversation';
+import toast from 'react-hot-toast';
+import { useFetchContext } from '../../context/FetchContext';
 
 function MessageInput() {
   const [message, setMessage] = useState('');
+  const { fetchAgain, setFetchAgain } = useFetchContext();
   const { loading, sendMessage } = useSendMessages();
   const { selectedConversation, typing, setTyping } = useConversation();
   const [showEmoji, setShowEmoji] = useState(false);
@@ -61,12 +64,16 @@ function MessageInput() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const trimmedMessage = message.trim();
-    if (!trimmedMessage) return;
-    await sendMessage(trimmedMessage);
-
-    setMessage('');
+    try {
+      e.preventDefault();
+      const trimmedMessage = message.trim();
+      if (!trimmedMessage) return;
+      setMessage('');
+      await sendMessage(trimmedMessage);
+      setFetchAgain(!fetchAgain);
+    } catch (error) {
+      toast.error(error.message);
+    }
   };
 
   const onEmojiClick = (emojiObject, event) => {

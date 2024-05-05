@@ -1,27 +1,30 @@
 require('dotenv').config();
 const express = require('express');
+const app = express();
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
+const authRouter = require('./routes/auth.routes');
+const userRouter = require('./routes/user.routes');
+const messageRouter = require('./routes/message.Routes');
+const chatRouter = require('./routes/chat.routes');
+const { globaleErrorHandler } = require('./controllers/errorController');
 const hpp = require('hpp');
 const { rateLimit } = require('express-rate-limit');
-const app = express();
 const { Server } = require('socket.io');
 const http = require('http');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const authRouter = require('./routes/auth.routes');
-const userRouter = require('./routes/user.routes');
-const { globaleErrorHandler } = require('./controllers/errorController');
-const messageRouter = require('./routes/message.Routes');
 const connectToMongoDB = require('./config/DBconfig');
 const AppError = require('./utils/error-handlers/AppError');
-const chatRouter = require('./routes/chat.routes');
+
 const PORT = process.env.PORT || 5000;
+
 const limiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 60 minutes
-  limit: 200, // Limit each IP to 100 requests per `window` .
+  windowMs: 60 * 60 * 1000,
+  limit: 100, // Limit each IP to 100 requests per `window` .
   message: 'Too many requests! try again in one hour',
 });
+
 const userSocketMap = {}; // {userId: socketId}
 
 app.use(
@@ -43,8 +46,6 @@ app.use('/api/message', messageRouter);
 app.use('/api/chat', chatRouter);
 app.use('/api/user', userRouter);
 
-app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);
-
 const server = http.createServer(app);
 
 const io = new Server(server, {
@@ -64,7 +65,6 @@ io.on('connection', (socket) => {
   io.emit('getOnlineUsers', Object.keys(userSocketMap));
 
   socket.on('setup', (userData) => {
-    console.log('initial setup');
     socket.join(userData._id);
   });
 
