@@ -5,6 +5,7 @@ import MessageContainer from '../../components/messages/MessageContainer';
 import { FetchProvider } from '../../context/FetchContext';
 
 function Home() {
+  console.log('Home');
   return (
     <FetchProvider>
       <div className="home  h-screen flex items-center justify-center">

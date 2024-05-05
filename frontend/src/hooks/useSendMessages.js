@@ -17,7 +17,7 @@ function useSendMessages() {
   const sendMessage = async (message) => {
     try {
       setLoading(true);
-
+      socket?.emit('stop typing', selectedConversation?._id);
       const { data } = await axios.post(
         '/message',
         { chatId: selectedConversation._id, content: message },

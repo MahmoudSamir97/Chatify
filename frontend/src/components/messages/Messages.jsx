@@ -1,13 +1,20 @@
 import React, { useEffect, useRef } from 'react';
 import Message from './Message';
-import useGetMessages from '../../hooks/useGetMessages';
 import MessageSkeleton from '../skeletons/MessageSceleton';
-import useListenMessage from '../../hooks/useListenMessage';
+import notificationSound from '../../assets/sounds/notification.mp3';
+import { useFetchContext } from '../../context/FetchContext';
+import useConversation from '../../zustand/useConversation';
+import { useSocketContext } from '../../context/SocketContext';
+import useGetMessages from '../../hooks/useGetMessages';
+import { throttle } from 'lodash';
 
 function Messages() {
-  const { messages, loading } = useGetMessages();
-  useListenMessage();
   const lastMsgRef = useRef();
+  const { loading } = useGetMessages();
+  const { socket } = useSocketContext();
+  const { setMessages, messages, selectedConversation } = useConversation();
+  const { notifications, setNotifications } = useFetchContext();
+  const selectedCompareChat = selectedConversation;
 
   useEffect(() => {
     setTimeout(() => {
@@ -15,20 +22,46 @@ function Messages() {
     }, 100);
   }, [messages]);
 
+  useEffect(() => {
+    if (!socket) return;
+
+    const throttledHandleMessageReceived = throttle((newMessage) => {
+      console.log(newMessage, 'message received 😎😎😎😎😎');
+      if (
+        !selectedCompareChat ||
+        newMessage.chat._id !== selectedConversation?._id
+      ) {
+        if (!notifications.includes(newMessage)) {
+          setNotifications([newMessage, ...notifications]);
+        }
+      } else {
+        newMessage.shouldShake = true;
+        const sound = new Audio(notificationSound);
+        sound.play();
+        setMessages([...messages, newMessage]);
+      }
+    }, 1000);
+
+    socket.on('message received', throttledHandleMessageReceived);
+
+    return () => socket.off('message received', throttledHandleMessageReceived);
+  }, [socket, setMessages, messages]);
+
   return (
     <div
-      className="px-4 flex-1 overflow-auto"
+      className="relative px-4 flex-1 overflow-auto"
       style={{
         overflowY: 'scroll',
       }}
     >
       {!loading &&
         messages?.length > 0 &&
-        messages?.map((message) => (
-          <div key={message._id} ref={lastMsgRef}>
+        messages?.map((message, index) => (
+          <div key={`${message._id}_${index}`} ref={lastMsgRef}>
             <Message message={message} />
           </div>
         ))}
+
       {loading && [...Array(3)].map((_, idx) => <MessageSkeleton key={idx} />)}
       {!loading && messages.length === 0 && (
         <p className="text-center text text-sm text-gray-400">

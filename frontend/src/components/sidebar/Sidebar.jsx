@@ -5,10 +5,10 @@ import SearchUser from './SearchUser';
 
 function Sidebar() {
   const [showSearchSidebar, setshowSearchSidebar] = useState(false);
-
   const toggleSearchSidebar = () => {
     setshowSearchSidebar(!showSearchSidebar);
   };
+  console.log('Sidebar');
   return (
     <div className="flex w-full justify-between py-2">
       {showSearchSidebar && <SearchUser />}

@@ -12,30 +12,27 @@ export const SocketContextProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const { authUser } = useAuthContext();
+
   useEffect(() => {
-    const initializeSocket = () => {
-      if (authUser) {
-        const newSocket = io('http://localhost:4000', {
-          query: { userId: authUser._id },
-        });
-        setSocket(newSocket);
-        newSocket.on('getOnlineUsers', (users) => {
-          setOnlineUsers(users);
-        });
+    if (authUser) {
+      const newSocket = io('http://localhost:4000', {
+        query: { userId: authUser._id },
+      });
+      newSocket.emit('setup', authUser);
+      setSocket(newSocket);
+      newSocket.on('getOnlineUsers', (users) => {
+        setOnlineUsers(users);
+      });
 
-        newSocket.emit('setup', authUser);
-
-        return () => newSocket.close();
-      } else {
-        if (socket) {
-          socket.close();
-          setSocket(null);
-        }
+      return () => newSocket.close();
+    } else {
+      if (socket) {
+        socket.close();
+        setSocket(null);
       }
-    };
-
-    return initializeSocket();
+    }
   }, [authUser]);
+
   return (
     <SocketContext.Provider value={{ socket, onlineUsers }}>
       {children}

@@ -4,7 +4,7 @@
 
 /* Hide the default scrollbar */
 ::-webkit-scrollbar {
-  width: 5px; /* Set the width of the scrollbar */
+  width: 7.5px; /* Set the width of the scrollbar */
 }
 
 /* Style the scrollbar thumb */

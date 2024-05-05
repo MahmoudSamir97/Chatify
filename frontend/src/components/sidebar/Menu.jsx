@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import imgPlaceHolder from './../../assets/images/avatar.png';
 import addIcon from './../../assets/images/add.png';
@@ -8,28 +8,52 @@ import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useAuthContext } from '../../context/AuthContext';
 import GroupChatModal from '../modals/groupChatModal/GroupChatModal';
+import { useFetchContext } from '../../context/FetchContext';
+import Notifications from '../modals/NotificationModal/Notifications';
+import useConversation from '../../zustand/useConversation';
 
 function Menu({ toggleSidebar }) {
   const { setAuthUser } = useAuthContext();
   const [showModal, setShowModal] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const { authUser } = useAuthContext();
+  const { notifications, setNotifications } = useFetchContext();
+  const { setSelectedConversation } = useConversation();
 
   const handleLogOut = async () => {
     try {
       await axios.post('/auth/logout', {});
       setAuthUser(null);
-      localStorage.removeItem('chat-user');
+      localStorage.removeItem('token');
     } catch (err) {
       toast.error(err.message);
     }
   };
 
-  const openModal = () => {
+  useEffect(() => {
+    console.log('notifs changed');
+  }, [notifications]);
+
+  const openGroupHandler = () => {
     setShowModal(true);
   };
 
-  const closeModal = () => {
+  const closeGroupHandler = () => {
     setShowModal(false);
+  };
+
+  const openNotificaionsHandler = () => {
+    setShowNotifications(true);
+  };
+
+  const closeNotificaionsHandler = () => {
+    setShowNotifications(false);
+  };
+
+  const handleNotificationClick = (msg) => {
+    setSelectedConversation(msg.chat);
+    setNotifications(notifications.filter((n) => msg._id !== n._id));
+    closeNotificaionsHandler();
   };
 
   return (
@@ -76,13 +100,29 @@ function Menu({ toggleSidebar }) {
         <Link
           to={'/'}
           tabIndex={0}
-          className="flex items-center w-full p-3 rounded-lg text-start leading-tight transition-all hover:bg-blue-50 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-blue-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900 outline-none"
+          onClick={openNotificaionsHandler}
+          className="relative flex items-center w-full p-3 rounded-lg text-start leading-tight transition-all hover:bg-blue-50 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-blue-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900 outline-none"
         >
-          <div className="grid place-items-center mr-4">
+          <div className=" grid place-items-center mr-4">
             <img src={notificationImg} alt="notification" />
           </div>
+          {notifications.length > 0 && (
+            <div className="absolute inset-x-0">
+              <div className="px-1  rounded-full text-center bg-red-500 text-white text-sm absolute -top-3 -end-2 z-10">
+                {notifications.length}
+                <div className="absolute top-0 right-0 rounded-full -z-10 animate-ping bg-red-200 w-full h-full"></div>
+              </div>
+            </div>
+          )}
           Notifications
         </Link>
+        {showNotifications && (
+          <Notifications
+            closeModal={closeNotificaionsHandler}
+            handleNotificationClick={handleNotificationClick}
+            notifs={notifications}
+          />
+        )}
         <div
           role="button"
           tabIndex={0}
@@ -97,7 +137,7 @@ function Menu({ toggleSidebar }) {
         <div
           role="button"
           tabIndex={0}
-          onClick={openModal}
+          onClick={openGroupHandler}
           className="flex items-center w-full p-3 rounded-lg text-start leading-tight transition-all hover:bg-blue-50 hover:bg-opacity-80 focus:bg-blue-50 focus:bg-opacity-80 active:bg-gray-50 active:bg-opacity-80 hover:text-blue-900 focus:text-blue-900 active:text-blue-900 outline-none"
         >
           <div className="grid place-items-center mr-4">
@@ -105,7 +145,7 @@ function Menu({ toggleSidebar }) {
           </div>
           Create group chat
         </div>
-        {showModal && <GroupChatModal closeModal={closeModal} />}
+        {showModal && <GroupChatModal closeModal={closeGroupHandler} />}
         <div
           role="button"
           tabIndex={0}

@@ -1,13 +1,13 @@
 import React, { useRef, useState } from 'react';
 import useGetConversation from '../../../hooks/useGetConversation';
 import toast from 'react-hot-toast';
-import UserListItem from '../../userAvatar/UserListItem';
 import UserBadgeItem from '../../userAvatar/UserBadgeItem';
 import { Box } from '@chakra-ui/layout';
 import { FaPlus } from 'react-icons/fa6';
 import avatarImg from '../../../assets/images/avatar.png';
 import axios from 'axios';
 import { useFetchContext } from '../../../context/FetchContext';
+import UserList from '../../utils/UserList';
 
 const GroupChatModal = ({ closeModal }) => {
   const [groupName, setGroupName] = useState('');
@@ -226,10 +226,10 @@ const GroupChatModal = ({ closeModal }) => {
                     searchResult
                       ?.slice(0, 4)
                       .map((res) => (
-                        <UserListItem
+                        <UserList
                           key={res?._id}
                           user={res}
-                          handleAddUser={() => handleGroup(res)}
+                          handleFunction={() => handleGroup(res)}
                         />
                       ))
                   )}

@@ -1,16 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Conversation from './Conversation';
-import useGetConversation from '../../hooks/useGetConversation';
+
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useFetchContext } from '../../context/FetchContext';
 
 function Conversations() {
-  const { loading, conversations, setConversations } = useGetConversation();
+  const [conversations, setConversations] = useState([]);
+  const [loading, setLoading] = useState(false);
   const { fetchAgain } = useFetchContext();
+  console.log(Conversations);
 
   const fetchChats = async () => {
     try {
+      setLoading(true);
       const token = localStorage.getItem('token').replace(/^"|"$/g, ''); // Remove surrounding quotes
       const config = {
         headers: { Authorization: `Bearer ${token}` },
@@ -20,6 +23,8 @@ function Conversations() {
       setConversations(data.populatedChats);
     } catch (error) {
       toast(error.message);
+    } finally {
+      setLoading(false);
     }
   };
 

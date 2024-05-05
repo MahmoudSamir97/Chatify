@@ -1,30 +1,31 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import { IoExitOutline } from "react-icons/io5";
-import AvatarImg from "./../../assets/images/avatar.png";
-import axios from "axios";
-import "./Setting.css";
-import toast from "react-hot-toast";
-import { useAuthContext } from "../../context/AuthContext";
-const name = "";
+import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { IoExitOutline } from 'react-icons/io5';
+import AvatarImg from './../../assets/images/avatar.png';
+import axios from 'axios';
+import './Setting.css';
+import toast from 'react-hot-toast';
+import { useAuthContext } from '../../context/AuthContext';
+
 function Profile() {
   const [form, setForm] = useState({
-    fullname: "",
-    username: "",
-    phoneNumber: "",
-    bio: "",
+    fullname: '',
+    username: '',
+    phoneNumber: '',
+    bio: '',
   });
+
   const { authUser, setAuthUser } = useAuthContext();
   const [loading, setLoading] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
   const [changedFields, setChangedFields] = useState({});
   const [fetchAgain, setFetchAgain] = useState(false);
-  const [imagePreview, setImagePreview] = useState("");
+  const [imagePreview, setImagePreview] = useState('');
   const inputRef = useRef(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data } = await axios.get("/user/profile", config);
+      const { data } = await axios.get('/user/profile', config);
 
       setImagePreview(data.user.profileImage.secure_url);
       setAuthUser(data.user);
@@ -33,7 +34,7 @@ function Profile() {
   }, [fetchAgain]);
 
   // CONFIG
-  const token = localStorage.getItem("token").replace(/^"|"$/g, ""); // Remove surrounding quotes
+  const token = localStorage.getItem('token').replace(/^"|"$/g, ''); // Remove surrounding quotes
   const config = {
     headers: { Authorization: `Bearer ${token}` },
   };
@@ -51,11 +52,11 @@ function Profile() {
       const file = event.target.files[0];
       setImagePreview(URL.createObjectURL(file));
       const form = new FormData();
-      form.append("profileImage", file);
-      const { data } = await axios.post("/user/profile-image", form, config);
+      form.append('profileImage', file);
+      const { data } = await axios.post('/user/profile-image', form, config);
       setAuthUser(data.updatedChat);
       setFetchAgain(!fetchAgain);
-      toast.success("Image added successfully");
+      toast.success('Image added successfully');
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -66,13 +67,13 @@ function Profile() {
   const handleDeleteImage = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.delete("/user/profile-image", config);
+      const { data } = await axios.delete('/user/profile-image', config);
 
       setAuthUser(data.user);
 
       setFetchAgain(!fetchAgain);
 
-      toast.success("Image deleted successfully");
+      toast.success('Image deleted successfully');
     } catch (error) {
       toast.error(error.message);
     } finally {
@@ -80,17 +81,16 @@ function Profile() {
     }
   };
 
-  //   SUBMIT
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
       setEditLoading(true);
-      const res = await axios.patch("/user/profile", changedFields, config);
+      const res = await axios.patch('/user/profile', changedFields, config);
       if (res.error) throw new Error(res.error);
       setEditLoading(false);
       setAuthUser(res.data.updatedUser);
-      setForm({ fullname: "", username: "", phoneNumber: "", bio: "" });
-      toast.success("Profile updated successfully");
+      setForm({ fullname: '', username: '', phoneNumber: '', bio: '' });
+      toast.success('Profile updated successfully');
     } catch (error) {
       if (error.response && error.response.data) {
         const responseData = error.response.data;
@@ -100,7 +100,7 @@ function Profile() {
           const validationError = responseData.errors[0];
           toast.error(validationError.message);
         } else {
-          toast.error("An error occurred. Please try again later.");
+          toast.error('An error occurred. Please try again later.');
         }
       }
       setEditLoading(false);
@@ -108,13 +108,13 @@ function Profile() {
       setLoading(false);
     }
   };
+
   return (
     <div className="setting bg-dark:bg-slate-800 bg-white w-full flex flex-col gap-5 px-3 md:px-16 lg:px-28 md:flex-row text-[#161931]">
-      {/* SIDEBAR */}
       <aside className="hidden py-4 md:w-1/3 lg:w-1/4 md:block">
         <div
           className="sticky flex flex-col gap-2 p-4 text-sm border-r border-indigo-100 top-12 "
-          style={{ height: "30vh" }}
+          style={{ height: '30vh' }}
         >
           <h2 className="pl-4 mb-4 text-2xl font-semibold">
             {authUser.username}
@@ -128,29 +128,27 @@ function Profile() {
           </div>
           <div className="links-container">
             <Link
-              to={"#!"}
+              to={'#!'}
               className="flex items-center px-3 py-2.5 mb-2 font-bold bg-white  text-indigo-900 border rounded-full"
             >
               Pubic Profile
             </Link>
             <Link
-              to={"/"}
+              to={'/'}
               className=" px-3 py-2.5 font-bold flex items-center text-red-600 hover:text-red-800"
             >
-              <IoExitOutline className="text-2xl cursor-pointer font-bold  " />{" "}
+              <IoExitOutline className="text-2xl cursor-pointer font-bold  " />{' '}
               Return
             </Link>
           </div>
         </div>
       </aside>
-      {/* MAIN */}
       <main className="w-full min-h-screen py-1 md:w-2/3 lg:w-3/4">
         <div className="p-2 md:p-4">
           <div className="w-full px-6 pb-8 mt-8 sm:max-w-xl sm:rounded-lg">
             <h2 className="pl-6 text-2xl font-bold sm:text-xl text-center mb-7">
               Public Profile
             </h2>
-            {/*FORM  */}
             <form onSubmit={handleSubmit}>
               <div className="grid max-w-2xl mx-auto mt-8">
                 <div className="flex flex-col items-center space-y-5 sm:flex-row sm:space-y-0">
@@ -193,7 +191,6 @@ function Profile() {
                 )}
 
                 <div className="items-center mt-8 sm:mt-14 text-[#202142]">
-                  {/* SINGLE INPUT */}
                   <div className="mb-2 sm:mb-6">
                     <label
                       htmlFor="fullname"
@@ -211,7 +208,6 @@ function Profile() {
                       onChange={handleChange}
                     />
                   </div>
-                  {/* SINGLE INPUT */}
                   <div className="mb-2 sm:mb-6">
                     <label
                       htmlFor="username"
@@ -229,7 +225,6 @@ function Profile() {
                       onChange={handleChange}
                     />
                   </div>
-                  {/* SINGLE INPUT */}
                   <div className="mb-2 sm:mb-6">
                     <label
                       htmlFor="phoneNumber"
@@ -247,7 +242,6 @@ function Profile() {
                       onChange={handleChange}
                     />
                   </div>
-                  {/* SINGLE INPUT */}
                   <div className="mb-2 sm:mb-6">
                     <label
                       htmlFor="bio"

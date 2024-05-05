@@ -8,9 +8,12 @@ export const useFetchContext = () => {
 
 export const FetchProvider = ({ children }) => {
   const [fetchAgain, setFetchAgain] = useState(false);
+  const [notifications, setNotifications] = useState([]);
 
   return (
-    <FetchContext.Provider value={{ fetchAgain, setFetchAgain }}>
+    <FetchContext.Provider
+      value={{ fetchAgain, setFetchAgain, notifications, setNotifications }}
+    >
       {children}
     </FetchContext.Provider>
   );

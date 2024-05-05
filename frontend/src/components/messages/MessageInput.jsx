@@ -3,11 +3,16 @@ import { BsSend } from 'react-icons/bs';
 import useSendMessages from '../../hooks/useSendMessages';
 import { FaSmile } from 'react-icons/fa';
 import EmojiPicker from 'emoji-picker-react';
+import { useSocketContext } from '../../context/SocketContext';
+import useConversation from '../../zustand/useConversation';
 
 function MessageInput() {
   const [message, setMessage] = useState('');
   const { loading, sendMessage } = useSendMessages();
+  const { selectedConversation, typing, setTyping } = useConversation();
   const [showEmoji, setShowEmoji] = useState(false);
+  const { socket } = useSocketContext();
+
   const emojiRef = useRef();
   const inputRef = useRef();
 
@@ -28,8 +33,31 @@ function MessageInput() {
     };
   }, [inputRef, emojiRef]);
 
+  useEffect(() => {
+    socket.on('typing', () => setTyping(true));
+    socket.on('stop typing', () => setTyping(false));
+  }, []);
+
   const typingHandler = (e) => {
     setMessage(e.target.value);
+
+    if (!socket) return;
+
+    if (!typing) {
+      setTyping(true);
+      socket.emit('typing', selectedConversation?._id);
+    }
+
+    const lastTypingTime = new Date().getTime();
+    const timerLength = 3000;
+    setTimeout(() => {
+      const timeDiff = new Date().getTime() - lastTypingTime;
+
+      if (timeDiff >= timerLength && !typing) {
+        socket.emit('stop typing', selectedConversation?._id);
+        setTyping(false);
+      }
+    }, timerLength);
   };
 
   const handleSubmit = async (e) => {
@@ -59,8 +87,7 @@ function MessageInput() {
   };
 
   return (
-    <form className="px-4 my-3" onSubmit={handleSubmit}>
-      {/* Emoji Container  */}
+    <form className="px-4 mb-3" onSubmit={handleSubmit}>
       {showEmoji && (
         <div ref={emojiRef} className={'absolute bottom-14 '}>
           <EmojiPicker
@@ -72,7 +99,6 @@ function MessageInput() {
           />
         </div>
       )}
-      {/* Emoji Container */}
       <div className="relative w-full">
         <input
           ref={inputRef}

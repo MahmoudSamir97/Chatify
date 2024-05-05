@@ -1,5 +1,9 @@
 require('dotenv').config();
 const express = require('express');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const hpp = require('hpp');
+const { rateLimit } = require('express-rate-limit');
 const app = express();
 const { Server } = require('socket.io');
 const http = require('http');
@@ -13,6 +17,12 @@ const connectToMongoDB = require('./config/DBconfig');
 const AppError = require('./utils/error-handlers/AppError');
 const chatRouter = require('./routes/chat.routes');
 const PORT = process.env.PORT || 5000;
+const limiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 60 minutes
+  limit: 200, // Limit each IP to 100 requests per `window` .
+  message: 'Too many requests! try again in one hour',
+});
+const userSocketMap = {}; // {userId: socketId}
 
 app.use(
   cors({
@@ -20,7 +30,12 @@ app.use(
     credentials: true,
   })
 );
+
 app.use(express.json());
+app.use(helmet());
+app.use(limiter);
+app.use(mongoSanitize());
+app.use(hpp());
 app.use(cookieParser());
 
 app.use('/api/auth', authRouter);
@@ -28,7 +43,7 @@ app.use('/api/message', messageRouter);
 app.use('/api/chat', chatRouter);
 app.use('/api/user', userRouter);
 
-const userSocketMap = {}; // {userId: socketId}
+app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']);
 
 const server = http.createServer(app);
 
@@ -49,8 +64,8 @@ io.on('connection', (socket) => {
   io.emit('getOnlineUsers', Object.keys(userSocketMap));
 
   socket.on('setup', (userData) => {
+    console.log('initial setup');
     socket.join(userData._id);
-    socket.emit('connected');
   });
 
   socket.on('join chat', (room) => {
@@ -58,15 +73,20 @@ io.on('connection', (socket) => {
     socket.join(room);
   });
 
-  socket.on('newMessage', (newMessage) => {
-    const chat = newMessage.chat;
+  socket.on('typing', (room) => socket.in(room).emit('typing'));
 
-    if (!chat.users) return console.log('no chat users');
+  socket.on('stop typing', (room) => socket.in(room).emit('stop typing'));
 
-    chat.users.forEach((user) => {
-      if (user._id == newMessage.sender._id) return;
+  socket.on('newMessage', (newMessageRecieved) => {
+    const chat = newMessageRecieved.chat;
+    if (!chat.users.length) return console.log('chat.users not defined');
 
-      socket.in(user._id).emit('message recieved', newMessage);
+    const users = chat.isGroupChat
+      ? chat.users.map((user) => user._id)
+      : [chat.users[0]._id, chat.users[1]._id];
+
+    users.forEach((userId) => {
+      socket.broadcast.to(userId).emit('message received', newMessageRecieved);
     });
   });
 
