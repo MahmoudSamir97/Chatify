@@ -15,21 +15,21 @@ function App() {
   return (
     <>
       <Routes>
-        <Route
-          path="/"
-          element={authUser ? <Home /> : <Navigate to={'/login'} />}
-        />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forget-password" element={<ForgetPassword />} />
-        <Route
-          path="/profile"
-          element={authUser ? <Profile /> : <Navigate to={'/login'} />}
-        />
         <Route path="/auth/:id/verify/:token" element={<EmailVerify />} />
         <Route
           path="/auth/reset-password/:id/:token"
           element={<ResetPassword />}
+        />
+        <Route
+          path="/"
+          element={authUser ? <Home /> : <Navigate to={'/login'} />}
+        />
+        <Route
+          path="/profile"
+          element={authUser ? <Profile /> : <Navigate to={'/login'} />}
         />
       </Routes>
       <Toaster />
