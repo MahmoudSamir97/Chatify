@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import axios from "axios";
-import success from "./../../../assets/images/success.png";
-import "./EmailVerify.css";
+import { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import axios from 'axios';
+import success from './../../../assets/images/success.png';
+import './EmailVerify.css';
 
 const EmailVerify = () => {
   const [validUrl, setValidUrl] = useState(true);
@@ -12,11 +12,9 @@ const EmailVerify = () => {
     const verifyEmailUrl = async () => {
       try {
         const url = `http://localhost:4000/api/user/${params.id}/verify/${params.token}`;
-        const { data } = await axios.get(url);
-        console.log(data);
+        await axios.get(url);
         setValidUrl(true);
       } catch (error) {
-        console.log(error);
         setValidUrl(false);
       }
     };

@@ -1,7 +1,7 @@
-const upload = require('../middlewares/multer');
 const protectRoute = require('../middlewares/protectRoute');
-const { validation } = require('../middlewares/validation');
+const upload = require('../middlewares/multer');
 const updateSchema = require('../utils/validation-schema/updateSchema');
+const { validation } = require('../middlewares/validation');
 const userRouter = require('express').Router();
 const {
   getUsersForSidebar,

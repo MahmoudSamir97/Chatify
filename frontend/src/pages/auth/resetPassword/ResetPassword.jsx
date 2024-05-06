@@ -1,21 +1,20 @@
-import React, { useState } from "react";
-import chatImg from "../../../assets/images/chat.png";
-import toast from "react-hot-toast";
-import axios from "axios";
-import { FaRegEyeSlash } from "react-icons/fa";
-import { TbEye } from "react-icons/tb";
-import { useNavigate, useParams } from "react-router-dom";
-import "./ResetPassword.css";
+import React, { useState } from 'react';
+import chatImg from '../../../assets/images/chat.png';
+import toast from 'react-hot-toast';
+import axios from 'axios';
+import { FaRegEyeSlash } from 'react-icons/fa';
+import { TbEye } from 'react-icons/tb';
+import { useNavigate, useParams } from 'react-router-dom';
+import './ResetPassword.css';
 
 function ResetPassword() {
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [passVisible, setPassVisible] = useState(false);
   const [confirmPassVisible, setConfirmPassVisible] = useState(false);
   const navigate = useNavigate();
   const { id, token } = useParams();
 
-  //   SUBMIT FUNCTION
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -25,8 +24,8 @@ function ResetPassword() {
         confirmNewPassword,
       });
       if (res.error) throw new Error(res.error);
-      toast.success("Password resetted successfully");
-      setTimeout(() => navigate("/login"), 2300);
+      toast.success('Password resetted successfully');
+      setTimeout(() => navigate('/login'), 2300);
     } catch (error) {
       console.log(error);
       if (error.response && error.response.data) {
@@ -44,7 +43,7 @@ function ResetPassword() {
         }
         //  display generic error message
         else {
-          toast.error("An error occurred. Please try again later.");
+          toast.error('An error occurred. Please try again later.');
         }
       }
     }
@@ -82,7 +81,7 @@ function ResetPassword() {
                     </label>
                     <div className="relative">
                       <input
-                        type={passVisible ? "text" : "password"}
+                        type={passVisible ? 'text' : 'password'}
                         value={newPassword}
                         onChange={(e) => setNewPassword(e.target.value)}
                         id="new_password"
@@ -115,7 +114,7 @@ function ResetPassword() {
                     </label>
                     <div className="relative">
                       <input
-                        type={confirmPassVisible ? "text" : "password"}
+                        type={confirmPassVisible ? 'text' : 'password'}
                         value={confirmNewPassword}
                         onChange={(e) => setConfirmNewPassword(e.target.value)}
                         id="confirmn_new_password"

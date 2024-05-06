@@ -1,5 +1,8 @@
 const chatRouter = require('express').Router();
-
+const upload = require('../middlewares/multer');
+const findPrivateChat = require('../middlewares/findChat');
+const groupValidator = require('../middlewares/groupValidator');
+const protectRoute = require('../middlewares/protectRoute');
 const {
   fetchChats,
   createGroupChat,
@@ -10,15 +13,10 @@ const {
   changeGroupImage,
   deleteGroup,
 } = require('../controllers/chatController');
-const findPrivateChat = require('../middlewares/findChat');
-const groupValidator = require('../middlewares/groupValidator');
-const upload = require('../middlewares/multer');
-const protectRoute = require('../middlewares/protectRoute');
 
 chatRouter.use(protectRoute);
 
 chatRouter.route('/').get(fetchChats).post(findPrivateChat, createPrivateChat);
-
 chatRouter.post(
   '/create-group',
   upload.single('groupImage'),

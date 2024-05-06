@@ -1,9 +1,7 @@
 const User = require('../models/userModel');
-const imageDataURI = require('image-data-uri');
 const { uploadImage, destroy } = require('../services/cloudinary');
 const AppError = require('../utils/error-handlers/AppError');
 const { catchAsync } = require('../utils/error-handlers/catchAsync');
-const { compressImage } = require('../utils/compressImage');
 
 exports.getUsersForSidebar = catchAsync(async (req, res, next) => {
   const loggedInUserId = req.user._id;
@@ -49,7 +47,7 @@ exports.updateProfile = catchAsync(async (req, res, next) => {
   const updatedUser = await User.findByIdAndUpdate(
     req.user._id,
     { ...req.body },
-    { new: true },
+    { new: true }
   );
 
   res.status(200).json({
@@ -72,7 +70,7 @@ exports.addProfileImage = catchAsync(async (req, res, next) => {
         public_id,
       },
     },
-    { new: true },
+    { new: true }
   );
 
   res.status(200).json({ updatedChat });

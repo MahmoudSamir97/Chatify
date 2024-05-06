@@ -44,7 +44,6 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
-    // createdAt, updatedAt => Member since <createdAt>
   },
   { timestamps: true }
 );

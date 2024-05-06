@@ -86,15 +86,3 @@ const verifyTemplate = (url, userName) => {
 };
 
 module.exports = verifyTemplate;
-
-{
-  /* <td align="left" style="border-radius: 3px;" bgcolor="#1d6e39">
-  <a
-    href="${pageLink}"
-    target="_blank"
-    style="font-size: 20px; font-family: Helvetica, Arial, sans-serif; color: #ffffff; text-decoration: none; color: #ffffff; text-decoration: none; padding: 11px 22px; border-radius: 2px; border: 1px solid #426899; display: inline-block;"
-  >
-    Login page
-  </a>
-</td>; */
-}

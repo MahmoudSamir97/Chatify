@@ -1,4 +1,5 @@
 const nodemailer = require('nodemailer');
+
 const sendeEmail = async (user, subject, templateUsed, url) => {
   try {
     const transporter = nodemailer.createTransport({
@@ -14,7 +15,7 @@ const sendeEmail = async (user, subject, templateUsed, url) => {
 
     // send mail with defined transport object
     await transporter.sendMail({
-      from: process.env.USER, // sender address
+      from: process.env.USER,
       to: user.email,
       subject,
       html: templateUsed(url, user.username),

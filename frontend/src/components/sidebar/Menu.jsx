@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import imgPlaceHolder from './../../assets/images/avatar.png';
 import addIcon from './../../assets/images/add.png';
@@ -29,10 +29,6 @@ function Menu({ toggleSidebar }) {
       toast.error(err.message);
     }
   };
-
-  useEffect(() => {
-    console.log('notifs changed');
-  }, [notifications]);
 
   const openGroupHandler = () => {
     setShowModal(true);

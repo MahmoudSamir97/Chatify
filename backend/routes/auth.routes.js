@@ -1,4 +1,8 @@
+const resetMiddleware = require('../middlewares/resetMiddleware');
 const authRouter = require('express').Router();
+const resetSchema = require('../utils/validation-schema/resetPasswordSchema');
+const signupSchema = require('../utils/validation-schema/signupSchema');
+const { validation } = require('../middlewares/validation');
 const {
   signup,
   login,
@@ -7,10 +11,6 @@ const {
   resetPassword,
   verifyEmail,
 } = require('../controllers/authController');
-const resetMiddleware = require('../middlewares/resetMiddleware');
-const { validation } = require('../middlewares/validation');
-const resetSchema = require('../utils/validation-schema/resetPasswordSchema');
-const signupSchema = require('../utils/validation-schema/signupSchema');
 
 authRouter.post('/signup', validation({ body: signupSchema }), signup);
 authRouter.get('/:id/verify/:token', verifyEmail);

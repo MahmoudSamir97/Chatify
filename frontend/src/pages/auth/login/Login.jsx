@@ -16,16 +16,16 @@ function Signin() {
   const onSubmit = async (values, actions) => {
     try {
       const url = 'http://localhost:4000/api/auth/login';
+
       const { data } = await axios.post(url, values);
-      localStorage.setItem('chat-user', JSON.stringify(data.user));
-      localStorage.setItem('token', JSON.stringify(data.token));
+      localStorage.setItem('auth-user', JSON.stringify(data.user));
       setAuthUser(data.user);
       actions.resetForm();
       navigate('/');
     } catch (error) {
+      console.log(error);
       const errorMessage = error.response.data.message;
       if (errorMessage) {
-        console.log(error.response.data);
         toast.error(errorMessage);
       } else {
         toast.error('Error occurred, try with different data');
@@ -70,13 +70,15 @@ function Signin() {
                 />
                 <span
                   className="inline absolute right-2 bottom-3"
-                  onClick={() => setPassVisible((prev) => !prev)}>
+                  onClick={() => setPassVisible((prev) => !prev)}
+                >
                   {passVisible ? <TbEye /> : <FaRegEyeSlash />}
                 </span>
               </div>
               <Link
                 className="text-blue-700 text-sm inline hover:text-blue-400"
-                to={'/forget-password'}>
+                to={'/forget-password'}
+              >
                 Forget your password?
               </Link>
             </div>

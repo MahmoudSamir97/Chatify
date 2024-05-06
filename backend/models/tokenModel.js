@@ -6,10 +6,12 @@ const tokenSchema = new Schema({
     ref: 'User',
     required: true,
   },
+
   token: {
     type: String,
     required: true,
   },
+
   createdAt: {
     type: Date,
     default: Date.now,
@@ -18,8 +20,10 @@ const tokenSchema = new Schema({
 
 tokenSchema.methods.hasExpired = function () {
   const now = Date.now();
+
   const isExpired =
     now - this.createdAt.getTime() > 10 * 60 * 1000; /* 10 minutes */
+
   return isExpired;
 };
 

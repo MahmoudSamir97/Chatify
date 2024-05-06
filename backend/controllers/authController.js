@@ -1,6 +1,5 @@
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const generateTokenAndSetCookie = require('../utils/generateToken');
 const { catchAsync } = require('../utils/error-handlers/catchAsync');
@@ -36,12 +35,14 @@ exports.signup = catchAsync(async (req, res, next) => {
 
 exports.verifyEmail = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.params.id);
+
   if (!user) return next(new AppError(401, 'Invalid link'));
 
   const token = await Token.findOne({
     userId: user._id,
     token: req.params.token,
   });
+
   if (!token) return next(new AppError(401, 'User not found'));
 
   user.isVerified = true;
@@ -65,14 +66,11 @@ exports.login = catchAsync(async (req, res, next) => {
   if (!passwordMatch)
     return next(new AppError(401, 'Invalid email or password'));
 
-  // generateTokenAndSetCookie(user._id, res);
-  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.COOKIE_EXPIRES,
-  });
+  generateTokenAndSetCookie(user._id, res);
 
   res.status(200).json({
+    status: 'success',
     user,
-    token,
   });
 });
 

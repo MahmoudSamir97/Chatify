@@ -34,7 +34,7 @@ const sendErrorProd = (res, err) => {
       message: err.message,
     });
   }
-  // unexpected error , from unkonwn resource. dont send error details to user!
+  // unexpected error , from unkonwn resource. dont send error details !
   else {
     console.error('😁', err);
     res.status(500).json({
@@ -43,7 +43,7 @@ const sendErrorProd = (res, err) => {
     });
   }
 };
-// START
+
 exports.globaleErrorHandler = (err, req, res, next) => {
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';

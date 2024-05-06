@@ -33,8 +33,6 @@ function Notifications({ closeModal, notifs, handleNotificationClick }) {
     </div>
   ));
 
-  console.log(renderNotification, 'render');
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50">
       <div

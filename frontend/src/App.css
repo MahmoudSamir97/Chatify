@@ -1,13 +1,10 @@
-/*  login and signup pages style */
-
-@import url("https://fonts.googleapis.com/css2?family=Platypi:ital,wght@0,300..800;1,300..800&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Platypi:ital,wght@0,300..800;1,300..800&display=swap');
 :root {
   --primary-color: #005fff;
   --primary-color-alpha: #005fff1a;
 }
-/* font-family */
 * {
-  font-family: "Platypi", serif;
+  font-family: 'Platypi', serif;
 }
 
 html,
@@ -64,7 +61,6 @@ body {
   font-size: 1.5rem;
   font-weight: 900;
   margin: 1rem;
-  /* margin-bottom: 0; */
   text-align: center;
 }
 .first-input {
@@ -370,7 +366,6 @@ body {
 
 .channel-list__container {
   display: flex;
-  /* height: 800px; */
   height: 100%;
   box-shadow: inset 1px 0px 0px rgba(0, 0, 0, 0.1);
 }
@@ -380,8 +375,6 @@ body {
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
     var(--primary-color);
   box-shadow: 1px 0px 0px rgba(0, 0, 0, 0.25);
-  /* border-top-left-radius: 16px; */
-  /* border-bottom-left-radius: 16px; */
 }
 
 .channel-list__sidebar__icon1 {
@@ -1229,7 +1222,7 @@ ul.str-chat__simple-reactions-list:hover {
 
 .str-chat__edit-message-form
   .str-chat__message-team-form-footer
-  button[type="submit"] {
+  button[type='submit'] {
   color: var(--primary-color);
 }
 

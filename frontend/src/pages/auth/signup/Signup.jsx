@@ -1,62 +1,63 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { useFormik } from "formik";
-import { Link, useNavigate } from "react-router-dom";
-import * as Yup from "yup";
-import signupImage from "../../../assets/images/register.jpg";
-import { FaRegEyeSlash } from "react-icons/fa";
-import { TbEye } from "react-icons/tb";
-import toast from "react-hot-toast";
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useFormik } from 'formik';
+import { Link, useNavigate } from 'react-router-dom';
+import * as Yup from 'yup';
+import signupImage from '../../../assets/images/register.jpg';
+import { FaRegEyeSlash } from 'react-icons/fa';
+import { TbEye } from 'react-icons/tb';
+import toast from 'react-hot-toast';
 
 function Signup() {
   const [passVisible, setPassVisible] = useState(false);
   const [confirmPassVisible, setConfirmPassVisible] = useState(false);
   const navigate = useNavigate();
 
-  //   SUBMIT FUNCTION
   const onSubmit = async (values, actions) => {
     try {
-      const url = "http://localhost:4000/api/auth/signup";
-      const data = await axios.post(url, values);
+      const data = await axios.post('/auth/signup', values);
+
       if (data.error) throw new Error(data.error);
+
       actions.resetForm();
-      toast.success("Please verify your email address");
-      setTimeout(() => navigate("/login"), 2200);
+      toast.success('Please verify your email address');
+      setTimeout(() => navigate('/login'), 2200);
     } catch (error) {
+      console.log(error);
       const errorMessage = error.response.data.message;
       if (errorMessage) {
         toast.error(errorMessage);
       } else {
-        // generic error message
-        console.log(error);
-        toast.error("Error occured, try with different data");
+        toast.error('Error occured, try with different data');
       }
     }
   };
-  // VALIDATION SCHEMA
+
+  // REGEX
   const passwordPattern = new RegExp(/^[A-Z][A-Za-z1-9]{5,}[@#$%^&*]{1,}$/);
   const usernamePattern = new RegExp(/^[A-Za-z]{6,}[0-9@#$%^&*]{1,}$/);
+
   const signupSchema = Yup.object({
     fullname: Yup.string()
       .min(8, "full name can't be less than 8 characters")
-      .required("Required"),
+      .required('Required'),
     username: Yup.string()
-      .matches(usernamePattern, "Username must be unique")
-      .required("Required"),
+      .matches(usernamePattern, 'Username must be unique')
+      .required('Required'),
     email: Yup.string()
-      .email("Please enter a valid email address.")
-      .required("Required"),
+      .email('Please enter a valid email address.')
+      .required('Required'),
     password: Yup.string()
       .matches(
         passwordPattern,
-        "Password must start with Uppercase letter and includes special character"
+        'Password must start with Uppercase letter and includes special character',
       )
-      .required("Required"),
+      .required('Required'),
     confirmPassword: Yup.string()
-      .oneOf([Yup.ref("password")], "Password and confirm password must match")
-      .required("Required"),
+      .oneOf([Yup.ref('password')], 'Password and confirm password must match')
+      .required('Required'),
   });
-  // FORMIK
+
   const {
     values,
     touched,
@@ -67,11 +68,11 @@ function Signup() {
     handleSubmit,
   } = useFormik({
     initialValues: {
-      fullname: "",
-      username: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
+      fullname: '',
+      username: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
     },
     validationSchema: signupSchema,
     onSubmit,
@@ -89,7 +90,7 @@ function Signup() {
               <label htmlFor="fullname">Full Name</label>
               <input
                 className={
-                  errors.fullname && touched.fullname ? "input-error" : ""
+                  errors.fullname && touched.fullname ? 'input-error' : ''
                 }
                 name="fullname"
                 type="text"
@@ -107,7 +108,7 @@ function Signup() {
               <label htmlFor="username">Username</label>
               <input
                 className={
-                  errors.username && touched.username ? "input-error" : ""
+                  errors.username && touched.username ? 'input-error' : ''
                 }
                 name="username"
                 type="text"
@@ -124,7 +125,7 @@ function Signup() {
             <div className="auth__form-container_fields-content_input">
               <label htmlFor="phoneNumber">Email</label>
               <input
-                className={errors.email && touched.email ? "input-error" : ""}
+                className={errors.email && touched.email ? 'input-error' : ''}
                 name="email"
                 type="text"
                 placeholder="Email"
@@ -142,11 +143,11 @@ function Signup() {
               <div className="relative w-full">
                 <input
                   className={
-                    errors.password && touched.password ? "input-error" : ""
+                    errors.password && touched.password ? 'input-error' : ''
                   }
                   name="password"
-                  style={{ width: "100%" }}
-                  type={passVisible ? "text" : "password"}
+                  style={{ width: '100%' }}
+                  type={passVisible ? 'text' : 'password'}
                   placeholder="Password"
                   value={values.password}
                   onBlur={handleBlur}
@@ -170,12 +171,12 @@ function Signup() {
                 <input
                   className={
                     errors.confirmPassword && touched.confirmPassword
-                      ? "input-error"
-                      : ""
+                      ? 'input-error'
+                      : ''
                   }
-                  style={{ width: "100%" }}
+                  style={{ width: '100%' }}
                   name="confirmPassword"
-                  type={confirmPassVisible ? "text" : "password"}
+                  type={confirmPassVisible ? 'text' : 'password'}
                   placeholder="Confirm Password"
                   value={values.confirmPassword}
                   onBlur={handleBlur}
@@ -201,8 +202,8 @@ function Signup() {
           </form>
           <div className="auth__form-container_fields-account">
             <p>
-              Already have an account?{" "}
-              <Link className="link" to={"/login"}>
+              Already have an account?{' '}
+              <Link className="link" to={'/login'}>
                 Sign in
               </Link>
             </p>
