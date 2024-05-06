@@ -26,7 +26,9 @@ exports.signup = catchAsync(async (req, res, next) => {
     token: crypto.randomBytes(32).toString('hex'),
   });
 
-  const URL = `https://chatify-react.onrender.com/api/auth/${user._id}/verify/${token}`;
+  const URL = `${req.protocol}://${req.get('host')}/api/auth/${
+    user._id
+  }/verify/${token}`;
 
   sendeEmail(user, 'Verify email', verifyTemplate, URL);
 
@@ -95,7 +97,10 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
     });
   }
 
-  const URL = `https://chatify-react.onrender.com/auth/reset-password/${user._id}/${token.token}`;
+  const URL = `${req.protocol}://${req.get('host')}/api/auth/reset-password/${
+    user._id
+  }/${token.token}`;
+
   sendeEmail(user, 'Reset password', resetTemplate, URL);
 
   res.status(201).json({

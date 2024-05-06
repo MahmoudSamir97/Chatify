@@ -26,8 +26,6 @@ function Profile() {
   useEffect(() => {
     const fetchData = async () => {
       const { data } = await instance.get('/user/profile');
-
-      setImagePreview(data.user.profileImage.secure_url);
       setAuthUser(data.user);
     };
     fetchData();
@@ -35,8 +33,11 @@ function Profile() {
 
   const handleChange = (e) => {
     const field = e.target.name;
+
     const value = e.target.value;
+
     setForm((prev) => ({ ...prev, [field]: value }));
+
     setChangedFields((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -44,6 +45,7 @@ function Profile() {
     try {
       setLoading(true);
       const file = event.target.files[0];
+
       setImagePreview(URL.createObjectURL(file));
 
       const form = new FormData();
@@ -53,7 +55,9 @@ function Profile() {
       const { data } = await instance.post('/user/profile-image', form);
 
       setAuthUser(data.updatedChat);
+
       setFetchAgain(!fetchAgain);
+
       toast.success('Image added successfully');
     } catch (error) {
       toast.error(error.message);
@@ -82,12 +86,19 @@ function Profile() {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+
       setEditLoading(true);
+
       const res = await instance.patch('/user/profile', changedFields);
+
       if (res.error) throw new Error(res.error);
+
       setEditLoading(false);
+
       setAuthUser(res.data.updatedUser);
+
       setForm({ fullname: '', username: '', phoneNumber: '', bio: '' });
+
       toast.success('Profile updated successfully');
     } catch (error) {
       if (error.response && error.response.data) {

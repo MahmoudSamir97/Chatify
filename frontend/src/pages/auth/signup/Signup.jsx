@@ -25,7 +25,6 @@ function Signup() {
 
       setTimeout(() => navigate('/login'), 2200);
     } catch (error) {
-      console.log(error);
       const errorMessage = error.response.data.message;
       if (errorMessage) {
         toast.error(errorMessage);

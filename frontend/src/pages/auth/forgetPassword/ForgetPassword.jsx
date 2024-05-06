@@ -4,8 +4,11 @@ import instance from '../../../utils/axiosInstance';
 
 function ForgetPassword() {
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (e) => {
     try {
+      setLoading(true);
       e.preventDefault();
 
       const res = await instance.post('/auth/forget-password', { email });
@@ -17,15 +20,17 @@ function ForgetPassword() {
       toast.success('Check your email to complete resetting password');
     } catch (err) {
       const errorMessage = err.response.data.message;
-
       if (errorMessage) {
         toast.error(errorMessage);
       } else {
         // generic error message
         toast.error('Error occurred, try again later');
       }
+    } finally {
+      setLoading(false);
     }
   };
+
   return (
     <div>
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -65,8 +70,13 @@ function ForgetPassword() {
                 />
               </div>
             </div>
+            {loading && (
+              <div className="flex justify-center items-center my-1">
+                <div className="loading loading-spinner"></div>
+              </div>
+            )}
             <button
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+              className="bg-blue-500  hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
               type="submit"
             >
               Reset Password

@@ -80,6 +80,7 @@ io.on('connection', (socket) => {
 
   socket.on('newMessage', (newMessageRecieved) => {
     const chat = newMessageRecieved.chat;
+
     if (!chat.users.length) return console.log('chat.users not defined');
 
     const users = chat.isGroupChat
