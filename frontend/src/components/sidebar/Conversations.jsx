@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Conversation from './Conversation';
-
 import toast from 'react-hot-toast';
-import axios from 'axios';
 import { useFetchContext } from '../../context/FetchContext';
+import instance from '../../utils/axiosInstance';
 
 function Conversations() {
   const [conversations, setConversations] = useState([]);
@@ -13,12 +12,9 @@ function Conversations() {
   const fetchChats = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('token').replace(/^"|"$/g, ''); // Remove surrounding quotes
-      const config = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
 
-      const { data } = await axios.get('/chat', config);
+      const { data } = await instance.get('/chat');
+
       setConversations(data.populatedChats);
     } catch (error) {
       toast(error.message);

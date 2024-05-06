@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import signinImage from '../../../assets/images/register.jpg';
-import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaRegEyeSlash } from 'react-icons/fa';
 import { TbEye } from 'react-icons/tb';
 import toast from 'react-hot-toast';
 import { useAuthContext } from '../../../context/AuthContext';
+import instance from '../../../utils/axiosInstance';
 
 function Signin() {
   const [passVisible, setPassVisible] = useState(false);
@@ -15,12 +15,14 @@ function Signin() {
 
   const onSubmit = async (values, actions) => {
     try {
-      const url = 'http://localhost:4000/api/auth/login';
+      const { data } = await instance.post('/auth/login', values);
 
-      const { data } = await axios.post(url, values);
       localStorage.setItem('auth-user', JSON.stringify(data.user));
+
       setAuthUser(data.user);
+
       actions.resetForm();
+
       navigate('/');
     } catch (error) {
       console.log(error);
@@ -36,8 +38,10 @@ function Signin() {
   const { values, isSubmitting, handleChange, handleSubmit } = useFormik({
     initialValues: {
       email: '',
+
       password: '',
     },
+
     onSubmit,
   });
 

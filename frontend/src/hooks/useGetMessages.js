@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import useConversation from '../zustand/useConversation';
-import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useSocketContext } from '../context/SocketContext';
+import instance from '../utils/axiosInstance';
 
 function useGetMessages() {
   const { messages, setMessages, selectedConversation } = useConversation();
@@ -13,15 +13,13 @@ function useGetMessages() {
     const getMessage = async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token').replace(/^"|"$/g, ''); // Remove surrounding quotes
-        const config = {
-          headers: { Authorization: `Bearer ${token}` },
-        };
-        const { data } = await axios.get(
+
+        const { data } = await instance.get(
           `/message/${selectedConversation?._id}`,
-          config,
         );
+
         setMessages(data.messages);
+
         socket.emit('join chat', selectedConversation?._id);
       } catch (error) {
         toast.error(error.message);

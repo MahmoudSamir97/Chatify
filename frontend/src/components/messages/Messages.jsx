@@ -13,8 +13,7 @@ function Messages() {
   const { loading } = useGetMessages();
   const { socket } = useSocketContext();
   const { setMessages, messages, selectedConversation } = useConversation();
-  const { notifications, setNotifications, fetchAgain, setFetchAgain } =
-    useFetchContext();
+  const { notifications, setNotifications } = useFetchContext();
   const selectedCompareChat = selectedConversation;
 
   useEffect(() => {
@@ -26,7 +25,6 @@ function Messages() {
   useEffect(() => {
     if (!socket) return;
     const throttledHandleMessageReceived = throttle((newMessage) => {
-      console.log(newMessage, 'message received 😎😎😎😎😎');
       if (
         !selectedCompareChat ||
         newMessage.chat._id !== selectedConversation?._id

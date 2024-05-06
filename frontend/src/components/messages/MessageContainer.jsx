@@ -9,9 +9,9 @@ import Lottie from 'react-lottie';
 import animationData from '../../assets/animations/typing.json';
 import { useAuthContext } from '../../context/AuthContext';
 import { useSocketContext } from '../../context/SocketContext';
-import axios from 'axios';
 import toast from 'react-hot-toast';
 import { debounce } from 'lodash';
+import instance from '../../utils/axiosInstance';
 
 function MessageContainer({ fetchAgain, setFetchAgain }) {
   const [showEditModal, setShowEditModal] = useState(false);
@@ -44,13 +44,9 @@ function MessageContainer({ fetchAgain, setFetchAgain }) {
     const debouncedGetMessage = debounce(async () => {
       try {
         setLoading(true);
-        const token = localStorage.getItem('token').replace(/^"|"$/g, ''); // Remove surrounding quotes
-        const config = {
-          headers: { Authorization: `Bearer ${token}` },
-        };
-        const { data } = await axios.get(
+
+        const { data } = await instance.get(
           `/message/${selectedConversation?._id}`,
-          config,
         );
 
         setMessages(data.messages);

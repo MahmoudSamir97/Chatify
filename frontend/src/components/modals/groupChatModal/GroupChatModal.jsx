@@ -5,9 +5,9 @@ import UserBadgeItem from '../../userAvatar/UserBadgeItem';
 import { Box } from '@chakra-ui/layout';
 import { FaPlus } from 'react-icons/fa6';
 import avatarImg from '../../../assets/images/avatar.png';
-import axios from 'axios';
 import { useFetchContext } from '../../../context/FetchContext';
 import UserList from '../../utils/UserList';
+import instance from '../../../utils/axiosInstance';
 
 const GroupChatModal = ({ closeModal }) => {
   const [groupName, setGroupName] = useState('');
@@ -23,11 +23,6 @@ const GroupChatModal = ({ closeModal }) => {
   const [loading, setLoading] = useState(null);
 
   const groupImageRef = useRef();
-
-  const token = localStorage.getItem('token').replace(/^"|"$/g, ''); // Remove surrounding quotes
-  const config = {
-    headers: { Authorization: `Bearer ${token}` },
-  };
 
   const resetCreateGroup = (group) => {
     setGroupName('');
@@ -70,7 +65,7 @@ const GroupChatModal = ({ closeModal }) => {
         return;
       }
 
-      const { data } = await axios.get(`/user/find?search=${query}`, config);
+      const { data } = await instance.get(`/user/find?search=${query}`);
 
       if (!data) {
         setSearchResult(null);
@@ -96,7 +91,7 @@ const GroupChatModal = ({ closeModal }) => {
       if (imageFile) {
         sentData.append('groupImage', imageFile);
       }
-      const { data } = await axios.post('/chat/create-group', sentData, config);
+      const { data } = await instance.post('/chat/create-group', sentData);
       resetCreateGroup(data);
       setFetchAgain(!fetchAgain);
     } catch (error) {

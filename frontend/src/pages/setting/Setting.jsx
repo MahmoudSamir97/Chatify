@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { IoExitOutline } from 'react-icons/io5';
 import AvatarImg from './../../assets/images/avatar.png';
-import axios from 'axios';
 import './Setting.css';
 import toast from 'react-hot-toast';
 import { useAuthContext } from '../../context/AuthContext';
+import instance from '../../utils/axiosInstance';
 
 function Profile() {
   const [form, setForm] = useState({
@@ -25,19 +25,13 @@ function Profile() {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data } = await axios.get('/user/profile', config);
+      const { data } = await instance.get('/user/profile');
 
       setImagePreview(data.user.profileImage.secure_url);
       setAuthUser(data.user);
     };
     fetchData();
   }, [fetchAgain]);
-
-  // CONFIG
-  const token = localStorage.getItem('token').replace(/^"|"$/g, ''); // Remove surrounding quotes
-  const config = {
-    headers: { Authorization: `Bearer ${token}` },
-  };
 
   const handleChange = (e) => {
     const field = e.target.name;
@@ -51,9 +45,13 @@ function Profile() {
       setLoading(true);
       const file = event.target.files[0];
       setImagePreview(URL.createObjectURL(file));
+
       const form = new FormData();
+
       form.append('profileImage', file);
-      const { data } = await axios.post('/user/profile-image', form, config);
+
+      const { data } = await instance.post('/user/profile-image', form);
+
       setAuthUser(data.updatedChat);
       setFetchAgain(!fetchAgain);
       toast.success('Image added successfully');
@@ -67,7 +65,7 @@ function Profile() {
   const handleDeleteImage = async () => {
     try {
       setLoading(true);
-      const { data } = await axios.delete('/user/profile-image', config);
+      const { data } = await instance.delete('/user/profile-image');
 
       setAuthUser(data.user);
 
@@ -85,7 +83,7 @@ function Profile() {
     try {
       e.preventDefault();
       setEditLoading(true);
-      const res = await axios.patch('/user/profile', changedFields, config);
+      const res = await instance.patch('/user/profile', changedFields);
       if (res.error) throw new Error(res.error);
       setEditLoading(false);
       setAuthUser(res.data.updatedUser);

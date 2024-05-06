@@ -1,6 +1,6 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
+import instance from '../utils/axiosInstance';
 
 function useGetConversation() {
   const [loading, setLoading] = useState(false);
@@ -10,14 +10,10 @@ function useGetConversation() {
     const getConversations = async () => {
       setLoading(true);
       try {
-        const token = localStorage.getItem('token').replace(/^"|"$/g, ''); // Remove surrounding quotes
-        const config = {
-          headers: { Authorization: `Bearer ${token}` },
-        };
-
         const {
           data: { populatedChats },
-        } = await axios.get('/chat', config);
+        } = await instance.get('/chat');
+
         setConversations(populatedChats);
       } catch (error) {
         toast.error(error.message);

@@ -5,12 +5,12 @@ import addIcon from './../../assets/images/add.png';
 import notificationImg from './../../assets/images/notification.png';
 import searchImg from './../../assets/images/search-interface-symbol.png';
 import toast from 'react-hot-toast';
-import axios from 'axios';
 import { useAuthContext } from '../../context/AuthContext';
 import GroupChatModal from '../modals/groupChatModal/GroupChatModal';
 import { useFetchContext } from '../../context/FetchContext';
 import Notifications from '../modals/NotificationModal/Notifications';
 import useConversation from '../../zustand/useConversation';
+import instance from '../../utils/axiosInstance';
 
 function Menu({ toggleSidebar }) {
   const { setAuthUser } = useAuthContext();
@@ -22,9 +22,9 @@ function Menu({ toggleSidebar }) {
 
   const handleLogOut = async () => {
     try {
-      await axios.post('/auth/logout', {});
+      await instance.post('/auth/logout', {});
       setAuthUser(null);
-      localStorage.removeItem('token');
+      localStorage.removeItem('auth-user');
     } catch (err) {
       toast.error(err.message);
     }

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import toast from 'react-hot-toast';
 import UserList from '../utils/UserList';
 import useGetConversation from '../../hooks/useGetConversation';
 import useConversation from '../../zustand/useConversation';
 import { useFetchContext } from '../../context/FetchContext';
+import instance from '../../utils/axiosInstance';
 
 function SearchUser() {
   const [search, setSearch] = useState('');
@@ -18,15 +18,9 @@ function SearchUser() {
     try {
       setLoading(true);
 
-      const token = localStorage.getItem('token').replace(/^"|"$/g, ''); // Remove surrounding quotes
-
-      const config = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
-
       const {
         data: { newChatWithPopulated },
-      } = await axios.post('/chat', { userId }, config);
+      } = await instance.post('/chat', { userId });
 
       const isChatFound = conversations.find(
         (c) => c._id === newChatWithPopulated._id,
@@ -59,12 +53,10 @@ function SearchUser() {
           position: 'top-left',
         });
 
-      const token = localStorage.getItem('token').replace(/^"|"$/g, ''); // Remove surrounding quotes
-      const config = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
-
-      const { data } = await axios.get(`/user/find?search=${search}`, config);
+      const { data } = await instance.get(
+        `/user/find?search=${search}`,
+        config,
+      );
 
       if (!data.length)
         toast.error('No users founded', { position: 'top-left' });

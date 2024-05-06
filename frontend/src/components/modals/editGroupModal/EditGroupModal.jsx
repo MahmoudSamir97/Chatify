@@ -5,11 +5,11 @@ import plusImg from '../../../assets/images/plus.png';
 import UserBadgeItem from '../../userAvatar/UserBadgeItem';
 import { Box } from '@chakra-ui/layout';
 import toast from 'react-hot-toast';
-import axios from 'axios';
 import { useAuthContext } from '../../../context/AuthContext';
 import useConversation from '../../../zustand/useConversation';
 import UserList from '../../utils/UserList';
 import { useFetchContext } from '../../../context/FetchContext';
+import instance from '../../../utils/axiosInstance';
 
 function EditGroupModal({ chat, closeModal }) {
   const [chatName, setchatName] = useState('');
@@ -24,12 +24,6 @@ function EditGroupModal({ chat, closeModal }) {
 
   const groupImageRef = useRef();
 
-  // CONFIG
-  const token = localStorage.getItem('token').replace(/^"|"$/g, ''); // Remove surrounding quotes
-  const config = {
-    headers: { Authorization: `Bearer ${token}` },
-  };
-
   const successHandler = (updatedChat) => {
     setSelectedConversation(updatedChat);
     setConversations([updatedChat, ...conversations]);
@@ -40,15 +34,13 @@ function EditGroupModal({ chat, closeModal }) {
   const handleGroupRename = async () => {
     try {
       setLoading(true);
+
       if (!chatName) return;
-      const { data } = await axios.patch(
-        '/chat/rename-group',
-        {
-          chatId: selectedConversation._id,
-          chatName,
-        },
-        config,
-      );
+      const { data } = await instance.patch('/chat/rename-group', {
+        chatId: selectedConversation._id,
+        chatName,
+      });
+
       successHandler(data.updatedChat);
     } catch (error) {
       toast.error(error.message);
@@ -70,14 +62,10 @@ function EditGroupModal({ chat, closeModal }) {
       setSelectedUsers(
         selectedUsers.filter((userObj) => userObj._id !== user._id),
       );
-      const { data } = await axios.patch(
-        '/chat/remove-user',
-        {
-          chatId: selectedConversation._id,
-          userId: user._id,
-        },
-        config,
-      );
+      const { data } = await instance.patch('/chat/remove-user', {
+        chatId: selectedConversation._id,
+        userId: user._id,
+      });
 
       successHandler(data.updatedChat);
     } catch (error) {
@@ -103,14 +91,10 @@ function EditGroupModal({ chat, closeModal }) {
       }
       setSelectedUsers([...selectedUsers, userToAdd]);
       setSearchResult(null);
-      const { data } = await axios.patch(
-        '/chat/add-user',
-        {
-          chatId: selectedConversation._id,
-          userId: userToAdd._id,
-        },
-        config,
-      );
+      const { data } = await instance.patch('/chat/add-user', {
+        chatId: selectedConversation._id,
+        userId: userToAdd._id,
+      });
 
       successHandler(data.updatedChat);
     } catch (error) {
@@ -125,14 +109,13 @@ function EditGroupModal({ chat, closeModal }) {
       setLoading(true);
       const file = event.target.files[0];
       setImagePreview(URL.createObjectURL(file));
+
       const formData = new FormData();
       formData.append('chatImage', file);
       formData.append('chatId', selectedConversation._id);
-      const { data } = await axios.patch(
-        '/chat/update-image',
-        formData,
-        config,
-      );
+
+      const { data } = await instance.patch('/chat/update-image', formData);
+
       successHandler(data.updatedChat);
     } catch (error) {
       toast.error(error.message);
@@ -149,10 +132,11 @@ function EditGroupModal({ chat, closeModal }) {
         return;
       }
 
-      const { data } = await axios.get(`/user/find?search=${query}`, config);
+      const { data } = await instance.get(`/user/find?search=${query}`);
 
       if (!data) {
         setSearchResult(null);
+
         toast.error('No such user found');
       }
       setSearchResult(data);
@@ -170,16 +154,14 @@ function EditGroupModal({ chat, closeModal }) {
       if (selectedConversation.groupAdmin._id !== authUser._id)
         return toast.error('You are not allowed to delete Group');
 
-      const { data } = await axios.post(
-        '/chat/delete-group',
-        {
-          chatId: selectedConversation._id,
-        },
-        config,
-      );
+      await instance.post('/chat/delete-group', {
+        chatId: selectedConversation._id,
+      });
+
       setSelectedConversation(null);
       setConversations([...conversations]);
       setFetchAgain(!fetchAgain);
+
       toast.success('Group deleted successfully');
     } catch (error) {
       if (!error.response) return toast.error(error.message);
