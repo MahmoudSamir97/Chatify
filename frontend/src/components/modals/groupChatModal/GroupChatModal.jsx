@@ -83,16 +83,22 @@ const GroupChatModal = ({ closeModal }) => {
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
+
       setIsCreatingGroup(true);
+
       const sentData = new FormData();
+
       const usersToSend = selectedUsers.map((user) => user._id);
       sentData.append('groupName', groupName);
       sentData.append('users', usersToSend);
+
       if (imageFile) {
         sentData.append('groupImage', imageFile);
       }
       const { data } = await instance.post('/chat/create-group', sentData);
+
       resetCreateGroup(data);
+
       setFetchAgain(!fetchAgain);
     } catch (error) {
       if (!error.response) return toast.error(error.message);

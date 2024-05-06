@@ -5,6 +5,8 @@ const generateTokenAndSetCookie = (userId, res) => {
     expiresIn: process.env.COOKIE_EXPIRES,
   });
 
+  console.log(token, 'token');
+
   res.cookie('token', token, {
     maxAge: 15 * 24 * 60 * 60 * 1000,
     httpOnly: true,

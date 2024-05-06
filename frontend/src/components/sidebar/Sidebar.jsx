@@ -8,7 +8,6 @@ function Sidebar() {
   const toggleSearchSidebar = () => {
     setshowSearchSidebar(!showSearchSidebar);
   };
-  console.log('Sidebar');
   return (
     <div className="flex w-full justify-between py-2">
       {showSearchSidebar && <SearchUser />}

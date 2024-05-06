@@ -4,7 +4,7 @@ const { catchAsync } = require('../utils/error-handlers/catchAsync.js');
 const AppError = require('../utils/error-handlers/AppError.js');
 
 const protectRoute = catchAsync(async (req, res, next) => {
-  const token = req.coockie.token;
+  const token = req.cookie.token;
 
   if (!token)
     return next(new AppError(401, 'Unauthorized - No Token Provided'));
