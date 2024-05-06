@@ -16,8 +16,9 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const connectToMongoDB = require('./config/DBconfig');
 const AppError = require('./utils/error-handlers/AppError');
-
 const PORT = process.env.PORT || 5000;
+
+app.set('trust proxy', 1);
 
 const limiter = rateLimit({
   windowMs: 60 * 60 * 1000,
@@ -25,7 +26,7 @@ const limiter = rateLimit({
   message: 'Too many requests! try again in one hour',
 });
 
-const userSocketMap = {}; // {userId: socketId}
+const userSocketMap = {};
 
 app.use(
   cors({
