@@ -70,17 +70,18 @@ function ForgetPassword() {
                 />
               </div>
             </div>
-            {loading && (
-              <div className="flex justify-center items-center my-1">
-                <div className="loading loading-spinner"></div>
-              </div>
-            )}
+
             <button
               className="bg-blue-500  hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
               type="submit"
             >
               Reset Password
             </button>
+            {loading && (
+              <div className="flex justify-center items-center my-2">
+                <div className="loading loading-spinner"></div>
+              </div>
+            )}
           </form>
         </div>
       </div>
