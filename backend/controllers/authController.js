@@ -25,7 +25,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     userId: user._id,
     token: crypto.randomBytes(32).toString('hex'),
   });
-  const URL = `https://chatify-react.onrender.com/auth/${user._id}/verify/${token}`;
+  const URL = `https://chatify-react.onrender.com/api/auth/${user._id}/verify/${token}`;
   sendeEmail(user, 'Verify email', verifyTemplate, URL);
 
   res.status(201).json({

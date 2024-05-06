@@ -6,6 +6,7 @@ import { FaRegEyeSlash } from 'react-icons/fa';
 import { TbEye } from 'react-icons/tb';
 import { useNavigate, useParams } from 'react-router-dom';
 import './ResetPassword.css';
+import instance from '../../../utils/axiosInstance';
 
 function ResetPassword() {
   const [newPassword, setNewPassword] = useState('');
@@ -18,27 +19,27 @@ function ResetPassword() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const URL = `http://localhost:4000/api/auth/reset-password/${id}/${token}`;
-      const res = await axios.post(URL, {
+      const res = await instance.post(`/auth/reset-password/${id}/${token}`, {
         newPassword,
         confirmNewPassword,
       });
+
       if (res.error) throw new Error(res.error);
+
       toast.success('Password resetted successfully');
+
       setTimeout(() => navigate('/login'), 2300);
     } catch (error) {
       console.log(error);
       if (error.response && error.response.data) {
         const responseData = error.response.data;
-        // Check if the error response contains a specific message
+
         if (responseData.message) {
-          // Display specific error message
           toast.error(responseData.message);
-        }
-        // Check if the error response contains validation errors
-        else if (responseData.errors) {
+        } else if (responseData.errors) {
           // Display validation errors
           const validationError = responseData.errors[0];
+
           toast.error(validationError.message);
         }
         //  display generic error message

@@ -1,24 +1,28 @@
-import axios from "axios";
-import React, { useState } from "react";
-import toast from "react-hot-toast";
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
+import instance from '../../../utils/axiosInstance';
 
 function ForgetPassword() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const handleSubmit = async (e) => {
     try {
       e.preventDefault();
-      const url = "http://localhost:4000/api/auth/forget-password";
-      const res = await axios.post(url, { email });
+
+      const res = await instance.post('/auth/forget-password', { email });
+
       if (res.error) throw new Error(res.error);
-      setEmail("");
-      toast.success("Check your email to complete resetting password");
+
+      setEmail('');
+
+      toast.success('Check your email to complete resetting password');
     } catch (err) {
       const errorMessage = err.response.data.message;
+
       if (errorMessage) {
         toast.error(errorMessage);
       } else {
         // generic error message
-        toast.error("Error occurred, try again later");
+        toast.error('Error occurred, try again later');
       }
     }
   };
