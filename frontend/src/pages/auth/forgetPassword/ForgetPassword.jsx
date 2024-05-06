@@ -78,7 +78,7 @@ function ForgetPassword() {
               Reset Password
             </button>
             {loading && (
-              <div className="flex justify-center items-center my-2">
+              <div className="flex justify-center items-center mt-2">
                 <div className="loading loading-spinner"></div>
               </div>
             )}

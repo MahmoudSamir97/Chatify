@@ -12,12 +12,14 @@ function ResetPassword() {
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [passVisible, setPassVisible] = useState(false);
   const [confirmPassVisible, setConfirmPassVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { id, token } = useParams();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
     try {
+      setLoading(true);
+      e.preventDefault();
       const res = await instance.post(`/auth/reset-password/${id}/${token}`, {
         newPassword,
         confirmNewPassword,
@@ -36,7 +38,6 @@ function ResetPassword() {
         if (responseData.message) {
           toast.error(responseData.message);
         } else if (responseData.errors) {
-          // Display validation errors
           const validationError = responseData.errors[0];
 
           toast.error(validationError.message);
@@ -46,6 +47,8 @@ function ResetPassword() {
           toast.error('An error occurred. Please try again later.');
         }
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -144,6 +147,11 @@ function ResetPassword() {
                   >
                     Reset my password
                   </button>
+                  {loading && (
+                    <div className="flex justify-center items-center mt-2">
+                      <div className="loading loading-spinner"></div>
+                    </div>
+                  )}
                 </div>
               </form>
             </div>

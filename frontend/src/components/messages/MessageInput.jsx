@@ -69,8 +69,8 @@ function MessageInput() {
       const trimmedMessage = message.trim();
       if (!trimmedMessage) return;
       setMessage('');
-      setFetchAgain(!fetchAgain);
       await sendMessage(trimmedMessage);
+      setFetchAgain(!fetchAgain);
     } catch (error) {
       toast.error(error.message);
     }
