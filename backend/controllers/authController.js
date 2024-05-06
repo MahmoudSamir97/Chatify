@@ -9,6 +9,8 @@ const verifyTemplate = require('../utils/email-templates/verifyTemplate');
 const AppError = require('../utils/error-handlers/AppError');
 const resetTemplate = require('../utils/email-templates/resetPasswordTemplate');
 
+const BASE_URL = 'https://chatify-react.onrender.com';
+
 exports.signup = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -26,9 +28,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     token: crypto.randomBytes(32).toString('hex'),
   });
 
-  const URL = `${req.protocol}://${req.get('host')}/api/auth/${
-    user._id
-  }/verify/${token}`;
+  const URL = `${BASE_URL}/auth/${user._id}/verify/${token}`;
 
   sendeEmail(user, 'Verify email', verifyTemplate, URL);
 
@@ -97,9 +97,7 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
     });
   }
 
-  const URL = `${req.protocol}://${req.get('host')}/api/auth/reset-password/${
-    user._id
-  }/${token.token}`;
+  const URL = `${BASE_URL}/auth/reset-password/${user._id}/${token.token}`;
 
   sendeEmail(user, 'Reset password', resetTemplate, URL);
 

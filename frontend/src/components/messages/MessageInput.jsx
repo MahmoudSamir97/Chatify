@@ -6,11 +6,13 @@ import EmojiPicker from 'emoji-picker-react';
 import { useSocketContext } from '../../context/SocketContext';
 import useConversation from '../../zustand/useConversation';
 import toast from 'react-hot-toast';
+import { useFetchContext } from '../../context/FetchContext';
 
 function MessageInput() {
   const [message, setMessage] = useState('');
   const { loading, sendMessage } = useSendMessages();
   const { selectedConversation, typing, setTyping } = useConversation();
+  const { fetchAgain, setFetchAgain } = useFetchContext();
   const [showEmoji, setShowEmoji] = useState(false);
   const { socket } = useSocketContext();
 
@@ -67,6 +69,7 @@ function MessageInput() {
       const trimmedMessage = message.trim();
       if (!trimmedMessage) return;
       setMessage('');
+      setFetchAgain(!fetchAgain);
       await sendMessage(trimmedMessage);
     } catch (error) {
       toast.error(error.message);

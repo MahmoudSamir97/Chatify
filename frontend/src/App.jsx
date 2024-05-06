@@ -18,9 +18,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/forget-password" element={<ForgetPassword />} />
-        <Route path="/api/auth/:id/verify/:token" element={<EmailVerify />} />
+        <Route path="/auth/:id/verify/:token" element={<EmailVerify />} />
         <Route
-          path="/api/auth/reset-password/:id/:token"
+          path="/auth/reset-password/:id/:token"
           element={<ResetPassword />}
         />
         <Route

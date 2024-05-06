@@ -6,20 +6,16 @@ import instance from '../../utils/axiosInstance';
 
 function Conversations() {
   const [conversations, setConversations] = useState([]);
-  const [loading, setLoading] = useState(false);
   const { fetchAgain } = useFetchContext();
 
   const fetchChats = async () => {
     try {
-      setLoading(true);
-
       const { data } = await instance.get('/chat');
 
       setConversations(data.populatedChats);
     } catch (error) {
       toast(error.message);
     } finally {
-      setLoading(false);
     }
   };
 
@@ -42,11 +38,6 @@ function Conversations() {
             lastIdx={idx === conversations.length - 1}
           />
         ))}
-      {loading ? (
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="loading loading-spinner"></div>
-        </div>
-      ) : null}
     </div>
   );
 }

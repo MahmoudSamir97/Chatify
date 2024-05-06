@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import chatImg from '../../../assets/images/chat.png';
 import toast from 'react-hot-toast';
-import axios from 'axios';
 import { FaRegEyeSlash } from 'react-icons/fa';
 import { TbEye } from 'react-icons/tb';
 import { useNavigate, useParams } from 'react-router-dom';
