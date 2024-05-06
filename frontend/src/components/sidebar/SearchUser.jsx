@@ -53,10 +53,7 @@ function SearchUser() {
           position: 'top-left',
         });
 
-      const { data } = await instance.get(
-        `/user/find?search=${search}`,
-        config,
-      );
+      const { data } = await instance.get(`/user/find?search=${search}`);
 
       if (!data.length)
         toast.error('No users founded', { position: 'top-left' });
