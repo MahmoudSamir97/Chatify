@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useFormik } from 'formik';
 import { Link, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
@@ -7,6 +6,7 @@ import signupImage from '../../../assets/images/register.jpg';
 import { FaRegEyeSlash } from 'react-icons/fa';
 import { TbEye } from 'react-icons/tb';
 import toast from 'react-hot-toast';
+import instance from '../../../utils/axiosInstance';
 
 function Signup() {
   const [passVisible, setPassVisible] = useState(false);
@@ -15,12 +15,14 @@ function Signup() {
 
   const onSubmit = async (values, actions) => {
     try {
-      const data = await axios.post('/auth/signup', values);
+      const data = await instance.post('/auth/signup', values);
 
       if (data.error) throw new Error(data.error);
 
       actions.resetForm();
+
       toast.success('Please verify your email address');
+
       setTimeout(() => navigate('/login'), 2200);
     } catch (error) {
       console.log(error);
