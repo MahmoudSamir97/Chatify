@@ -5,6 +5,7 @@ This project is a real-time web application built using the MERN stack (MongoDB,
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [Demo](#demo)
 - [Features](#features)
 - [Requirements](#requirements)
 - [Installation](#installation)
