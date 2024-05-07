@@ -14,7 +14,6 @@ function Messages() {
   const { socket } = useSocketContext();
   const { setMessages, messages, selectedConversation } = useConversation();
   const { notifications, setNotifications } = useFetchContext();
-  const selectedCompareChat = selectedConversation;
 
   useEffect(() => {
     setTimeout(() => {
@@ -25,13 +24,8 @@ function Messages() {
   useEffect(() => {
     if (!socket) return;
     const throttledHandleMessageReceived = throttle((newMessage) => {
-      if (
-        !selectedCompareChat ||
-        newMessage.chat._id !== selectedConversation?._id
-      ) {
-        if (!notifications.includes(newMessage)) {
-          setNotifications([newMessage, ...notifications]);
-        }
+      if (newMessage.chat._id !== selectedConversation?._id) {
+        setNotifications([newMessage, ...notifications]);
       } else {
         newMessage.shouldShake = true;
         const sound = new Audio(notificationSound);
@@ -43,7 +37,14 @@ function Messages() {
     socket.on('message received', throttledHandleMessageReceived);
 
     return () => socket.off('message received', throttledHandleMessageReceived);
-  }, [socket, setMessages, messages]);
+  }, [
+    socket,
+    setMessages,
+    messages,
+    notifications,
+    setNotifications,
+    selectedConversation,
+  ]);
 
   return (
     <div
