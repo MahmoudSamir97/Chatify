@@ -90,7 +90,6 @@ io.on('connection', (socket) => {
     users.forEach((userId) => {
       socket.broadcast.to(userId).emit('message received', newMessageRecieved);
     });
-    io.emit('sendNotification', newMessageRecieved);
   });
 
   socket.on('disconnect', () => {
