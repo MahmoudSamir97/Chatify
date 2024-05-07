@@ -14,6 +14,7 @@ function Messages() {
   const { socket } = useSocketContext();
   const { setMessages, messages, selectedConversation } = useConversation();
   const { notifications, setNotifications } = useFetchContext();
+  const selectedCompareChat = selectedConversation;
 
   useEffect(() => {
     setTimeout(() => {
@@ -24,7 +25,10 @@ function Messages() {
   useEffect(() => {
     if (!socket) return;
     const throttledHandleMessageReceived = throttle((newMessage) => {
-      if (newMessage.chat._id !== selectedConversation?._id) {
+      if (
+        !selectedCompareChat ||
+        newMessage.chat._id !== selectedConversation?._id
+      ) {
         setNotifications([newMessage, ...notifications]);
       } else {
         newMessage.shouldShake = true;
