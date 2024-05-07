@@ -16,7 +16,7 @@ This project is a demonstration of building a real-time chat application using t
 
 ## Demo
 
-You can experience the live version of Chatify by visiting [Chatify Website](#) [https://chatify-react.onrender.com] 
+You can experience the live version of Chatify by visiting [Chatify Website](https://chatify-react.onrender.com) 
 
 **Instructions for Usage:**
 Before using the chat application, ensure that third-party cookies are allowed in your browser settings.
