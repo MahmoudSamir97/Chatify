@@ -18,7 +18,6 @@ const userSchema = new Schema(
     },
     phoneNumber: {
       type: String,
-      unique: true,
     },
     bio: {
       type: String,
