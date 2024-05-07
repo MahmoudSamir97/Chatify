@@ -22,32 +22,69 @@ function Messages() {
     }, 100);
   }, [messages]);
 
+  // useEffect(() => {
+  //   if (!socket) return;
+  //   const throttledHandleMessageReceived = throttle((newMessage) => {
+  //     if (
+  //       !selectedCompareChat ||
+  //       newMessage.chat._id !== selectedConversation?._id
+  //     ) {
+  //       setNotifications([newMessage, ...notifications]);
+  //     } else {
+  //       newMessage.shouldShake = true;
+  //       const sound = new Audio(notificationSound);
+  //       sound.play();
+  //       setMessages([...messages, newMessage]);
+  //     }
+  //   }, 1000);
+
+  //   socket.on('message received', throttledHandleMessageReceived);
+
+  //   return () => socket.off('message received', throttledHandleMessageReceived);
+  // }, [
+  //   socket,
+  //   setMessages,
+  //   messages,
+  //   notifications,
+  //   setNotifications,
+  //   selectedConversation,
+  //   selectedCompareChat,
+  // ]);
+
   useEffect(() => {
     if (!socket) return;
+
     const throttledHandleMessageReceived = throttle((newMessage) => {
-      if (
-        !selectedCompareChat ||
-        newMessage.chat._id !== selectedConversation?._id
-      ) {
-        setNotifications([newMessage, ...notifications]);
-      } else {
-        newMessage.shouldShake = true;
-        const sound = new Audio(notificationSound);
-        sound.play();
-        setMessages([...messages, newMessage]);
-      }
+      newMessage.shouldShake = true;
+      const sound = new Audio(notificationSound);
+      sound.play();
+      setMessages([...messages, newMessage]);
     }, 1000);
 
-    socket.on('message received', throttledHandleMessageReceived);
+    const handleNotification = (notificationMessage) => {
+      if (
+        !selectedCompareChat ||
+        notificationMessage.chat._id !== selectedConversation?._id
+      ) {
+        setNotifications([notificationMessage, ...notifications]);
+      }
+    };
 
-    return () => socket.off('message received', throttledHandleMessageReceived);
+    socket.on('message received', throttledHandleMessageReceived);
+    socket.on('sendNotification', handleNotification);
+
+    return () => {
+      socket.off('message received', throttledHandleMessageReceived);
+      socket.off('sendNotification', handleNotification);
+    };
   }, [
     socket,
-    setMessages,
-    messages,
+    selectedCompareChat,
+    selectedConversation,
     notifications,
     setNotifications,
-    selectedConversation,
+    messages,
+    setMessages,
   ]);
 
   return (
