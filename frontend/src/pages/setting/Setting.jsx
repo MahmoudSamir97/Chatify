@@ -26,6 +26,7 @@ function Profile() {
   useEffect(() => {
     const fetchData = async () => {
       const { data } = await instance.get('/user/profile');
+      setImagePreview(data.user.profileImage.secure_url);
       setAuthUser(data.user);
     };
     fetchData();
